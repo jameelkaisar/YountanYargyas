@@ -1,0 +1,34 @@
+<nav class="nav-extended">
+  <div class="nav-wrapper">
+    <a href="/" class="brand-logo hide-on-small-only">Yountan Yargyas</a>
+    <a href="/" class="brand-logo hide-on-med-and-up">YY</a>
+    <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+    <ul id="nav-mobile" class="right hide-on-med-and-down">
+      {% if user.is_authenticated %}
+        <li><a href="/account">{{user.username}}</a></li>
+        <li><a href="/logout">Logout</a></li>
+      {% else %}
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register">Register</a></li>
+      {% endif %}
+      <li><a href="/help.html">Help</a></li>
+      <li><a href="/contact.html">Contact</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/admin.html">Admin Panel</a></li>
+    </ul>
+  </div>
+</nav>
+
+<ul class="sidenav" id="mobile-demo">
+  {% if user.is_authenticated %}
+    <li><a href="/account">{{user.username}}</a></li>
+    <li><a href="/logout">Logout</a></li>
+  {% else %}
+    <li><a href="/login">Login</a></li>
+    <li><a href="/register">Register</a></li>
+  {% endif %}
+  <li><a href="/help.html">Help</a></li>
+  <li><a href="/contact.html">Contact</a></li>
+  <li><a href="/about.html">About</a></li>
+  <li><a href="/admin.html">Admin Panel</a></li>
+</ul>
