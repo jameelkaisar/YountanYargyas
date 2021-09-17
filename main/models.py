@@ -51,7 +51,7 @@ class StudentSection(models.Model):
 
     section_text = models.CharField(max_length=1000)
 
-    student_chater = models.ForeignKey(StudentChapter, default=1, verbose_name="Chapter", on_delete=models.SET_DEFAULT)
+    student_chapter = models.ForeignKey(StudentChapter, default=1, verbose_name="Chapter", on_delete=models.SET_DEFAULT)
 
     class Meta:
         verbose_name_plural = "Sections"
