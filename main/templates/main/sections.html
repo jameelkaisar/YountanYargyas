@@ -1,0 +1,8 @@
+{% extends "Main/header.html" %}
+
+{% block content %}
+    <h1>SECTIONS</h1>
+    {% for section in student_sections %}
+        <p>{{ section.student_section }}, {{ section.section_summary }}, <a href="/classes/{{ class_slug }}/{{ subject_slug }}/{{ chapter_slug }}/{{ section.section_slug }}">{{ section.section_slug }}</a></p>
+    {% endfor %}
+{% endblock %}

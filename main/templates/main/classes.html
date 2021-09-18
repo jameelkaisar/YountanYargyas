@@ -1,0 +1,8 @@
+{% extends "Main/header.html" %}
+
+{% block content %}
+    <h1>CLASSES</h1>
+    {% for class in student_classes %}
+        <p>{{ class.student_class }}, {{ class.class_summary }}, <a href="/classes/{{ class.class_slug }}">{{ class.class_slug }}</a></p>
+    {% endfor %}
+{% endblock %}
