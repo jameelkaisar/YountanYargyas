@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
-
+from .forms import AddClass, AddSubject, AddChapter, AddSection
 
 # Create your views here.
 
@@ -64,21 +64,41 @@ def logout_request(request):
     return redirect("main:homepage")
 
 def student_classes(request):
-    # return HttpResponse("Hello <strong>World</strong>!")
+    if request.method == "POST":
+        form = AddClass(request.POST)
+        if form.is_valid():
+            form.save()
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, error)
+
+    form = AddClass()
     return render(
         request=request,
         template_name="main/classes.html",
-        context={"student_classes": StudentClass.objects.all}
+        context={"student_classes": StudentClass.objects.all, "form": form}
         )
 
 def student_class(request, class_slug):
     class_slugs = [c.class_slug for c in StudentClass.objects.all()]
     if class_slug in class_slugs:
         matching_subjects = StudentSubject.objects.filter(student_class__class_slug=class_slug)
+
+        if request.method == "POST":
+            form = AddSubject(request.POST)
+            if form.is_valid():
+                form.save()
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, error)
+
+        form = AddSubject()
         return render(
             request=request,
             template_name="main/subjects.html",
-            context={"student_subjects": matching_subjects, "class_slug": class_slug}
+            context={"student_subjects": matching_subjects, "class_slug": class_slug, "form": form}
             )
     else:
         return HttpResponse(f"{class_slug} class is not present!")
@@ -90,10 +110,21 @@ def student_subject(request, class_slug, subject_slug):
         subject_slugs = [s.subject_slug for s in matching_subjects]
         if subject_slug in subject_slugs:
             matching_chapters = StudentChapter.objects.filter(student_subject__subject_slug=subject_slug, student_subject__student_class__class_slug=class_slug)
+
+            if request.method == "POST":
+                form = AddChapter(request.POST)
+                if form.is_valid():
+                    form.save()
+                else:
+                    for field, errors in form.errors.items():
+                        for error in errors:
+                            messages.error(request, error)
+
+            form = AddChapter()
             return render(
                 request=request,
                 template_name="main/chapters.html",
-                context={"student_chapters": matching_chapters, "class_slug": class_slug, "subject_slug": subject_slug}
+                context={"student_chapters": matching_chapters, "class_slug": class_slug, "subject_slug": subject_slug, "form": form}
                 )
         else:
             return HttpResponse(f"{subject_slug} subject is not present!")
@@ -110,10 +141,21 @@ def student_chapter(request, class_slug, subject_slug, chapter_slug):
             chapter_slugs = [c.chapter_slug for c in matching_chapters]
             if chapter_slug in chapter_slugs:
                 matching_sections = StudentSection.objects.filter(student_chapter__chapter_slug=chapter_slug, student_chapter__student_subject__subject_slug=subject_slug, student_chapter__student_subject__student_class__class_slug=class_slug)
+
+                if request.method == "POST":
+                    form = AddSection(request.POST)
+                    if form.is_valid():
+                        form.save()
+                    else:
+                        for field, errors in form.errors.items():
+                            for error in errors:
+                                messages.error(request, error)
+
+                form = AddSection()
                 return render(
                     request=request,
                     template_name="main/sections.html",
-                    context={"student_sections": matching_sections, "class_slug": class_slug, "subject_slug": subject_slug, "chapter_slug": chapter_slug}
+                    context={"student_sections": matching_sections, "class_slug": class_slug, "subject_slug": subject_slug, "chapter_slug": chapter_slug, "form": form}
                     )
             else:
                 return HttpResponse(f"{chapter_slug} chapter is not present!")
@@ -123,6 +165,7 @@ def student_chapter(request, class_slug, subject_slug, chapter_slug):
         return HttpResponse(f"{class_slug} class is not present!")
 
 def student_section(request, class_slug, subject_slug, chapter_slug, section_slug):
+    # Add Edit Section Form?
     class_slugs = [c.class_slug for c in StudentClass.objects.all()]
     if class_slug in class_slugs:
         matching_subjects = StudentSubject.objects.filter(student_class__class_slug=class_slug)

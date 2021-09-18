@@ -5,4 +5,10 @@
     {% for class in student_classes %}
         <p>{{ class.student_class }}, {{ class.class_summary }}, <a href="/classes/{{ class.class_slug }}">{{ class.class_slug }}</a></p>
     {% endfor %}
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn">Add Class</button>
+    </form>
 {% endblock %}

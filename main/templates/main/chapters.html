@@ -5,4 +5,10 @@
     {% for chapter in student_chapters %}
         <p>{{ chapter.student_chapter }}, {{ chapter.chapter_summary }}, <a href="/classes/{{ class_slug }}/{{ subject_slug }}/{{ chapter.chapter_slug }}">{{ chapter.chapter_slug }}</a></p>
     {% endfor %}
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn">Add Chapter</button>
+    </form>
 {% endblock %}
