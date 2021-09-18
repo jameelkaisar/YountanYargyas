@@ -94,7 +94,7 @@ def student_class(request, class_slug):
                     for error in errors:
                         messages.error(request, error)
 
-        form = AddSubject()
+        form = AddSubject(initial={"student_class": StudentClass.objects.filter(class_slug=class_slug)[0]})
         return render(
             request=request,
             template_name="main/subjects.html",
@@ -120,7 +120,7 @@ def student_subject(request, class_slug, subject_slug):
                         for error in errors:
                             messages.error(request, error)
 
-            form = AddChapter()
+            form = AddChapter(initial={"student_subject": StudentSubject.objects.filter(subject_slug=subject_slug, student_class__class_slug=class_slug)[0]})
             return render(
                 request=request,
                 template_name="main/chapters.html",
@@ -151,7 +151,7 @@ def student_chapter(request, class_slug, subject_slug, chapter_slug):
                             for error in errors:
                                 messages.error(request, error)
 
-                form = AddSection()
+                form = AddSection(initial={"student_chapter": StudentChapter.objects.filter(chapter_slug=chapter_slug, student_subject__subject_slug=subject_slug, student_subject__student_class__class_slug=class_slug)[0]})
                 return render(
                     request=request,
                     template_name="main/sections.html",
