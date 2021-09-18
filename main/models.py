@@ -1,6 +1,8 @@
 from django.db import models
 from datetime import datetime
 
+from django.core.exceptions import ValidationError
+
 # Create your models here.
 
 class StudentClass(models.Model):
@@ -11,6 +13,12 @@ class StudentClass(models.Model):
 
     class Meta:
         verbose_name_plural = "Classes"
+
+    def validate_unique(self, *args, **kwargs):
+        super(StudentClass, self).validate_unique(*args, **kwargs)
+        if self.__class__.objects.filter(class_slug=self.class_slug).exists():
+            raise ValidationError(message=f'StudentClass with (class_slug=\"{self.class_slug}\") already exists.',
+                                  code='unique_together',)
 
     def __str__(self):
         return self.student_class
@@ -26,6 +34,12 @@ class StudentSubject(models.Model):
     class Meta:
         verbose_name_plural = "Subjects"
 
+    def validate_unique(self, *args, **kwargs):
+        super(StudentSubject, self).validate_unique(*args, **kwargs)
+        if self.__class__.objects.filter(subject_slug=self.subject_slug, student_class__class_slug=self.student_class.class_slug).exists():
+            raise ValidationError(message=f'StudentSubject with (class_slug=\"{self.student_class.class_slug}\", subject_slug=\"{self.subject_slug}\") already exists.',
+                                  code='unique_together',)
+
     def __str__(self):
         return self.student_subject
 
@@ -39,6 +53,12 @@ class StudentChapter(models.Model):
 
     class Meta:
         verbose_name_plural = "Chapters"
+
+    def validate_unique(self, *args, **kwargs):
+        super(StudentChapter, self).validate_unique(*args, **kwargs)
+        if self.__class__.objects.filter(chapter_slug=self.chapter_slug, student_subject__subject_slug=self.student_subject.subject_slug, student_subject__student_class__class_slug=self.student_subject.student_class.class_slug).exists():
+            raise ValidationError(message=f'StudentChapter with (class_slug=\"{self.student_subject.student_class.class_slug}\", subject_slug=\"{self.student_subject.subject_slug}\", chapter_slug=\"{self.chapter_slug}\") already exists.',
+                                  code='unique_together',)
 
     def __str__(self):
         return self.student_chapter
@@ -55,6 +75,12 @@ class StudentSection(models.Model):
 
     class Meta:
         verbose_name_plural = "Sections"
+
+    def validate_unique(self, *args, **kwargs):
+        super(StudentSection, self).validate_unique(*args, **kwargs)
+        if self.__class__.objects.filter(section_slug=self.section_slug, student_chapter__chapter_slug=self.student_chapter.chapter_slug, student_chapter__student_subject__subject_slug=self.student_chapter.student_subject.subject_slug, student_chapter__student_subject__student_class__class_slug=self.student_chapter.student_subject.student_class.class_slug).exists():
+            raise ValidationError(message=f'StudentSection with (class_slug=\"{self.student_chapter.student_subject.student_class.class_slug}\", subject_slug=\"{self.student_chapter.student_subject.subject_slug}\", chapter_slug=\"{self.student_chapter.chapter_slug}\", section_slug=\"{self.section_slug}\") already exists.',
+                                  code='unique_together',)
 
     def __str__(self):
         return self.student_section
