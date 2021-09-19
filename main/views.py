@@ -64,6 +64,7 @@ def logout_request(request):
     return redirect("main:homepage")
 
 def student_classes(request):
+    # Add Edit/Delete Class Form?
     if request.method == "POST":
         form = AddClass(request.POST)
         if form.is_valid():
@@ -81,8 +82,10 @@ def student_classes(request):
         )
 
 def student_class(request, class_slug):
+    # Add Edit/Delete Subject Form?
     class_slugs = [c.class_slug for c in StudentClass.objects.all()]
     if class_slug in class_slugs:
+        class_slug_name = StudentClass.objects.filter(class_slug=class_slug)[0].student_class
         matching_subjects = StudentSubject.objects.filter(student_class__class_slug=class_slug)
 
         if request.method == "POST":
@@ -98,17 +101,20 @@ def student_class(request, class_slug):
         return render(
             request=request,
             template_name="main/subjects.html",
-            context={"student_subjects": matching_subjects, "class_slug": class_slug, "form": form}
+            context={"student_subjects": matching_subjects, "class_slug": class_slug, "class_slug_name": class_slug_name, "form": form}
             )
     else:
         return HttpResponse(f"{class_slug} class is not present!")
 
 def student_subject(request, class_slug, subject_slug):
+    # Add Edit/Delete Chapter Form?
     class_slugs = [c.class_slug for c in StudentClass.objects.all()]
     if class_slug in class_slugs:
+        class_slug_name = StudentClass.objects.filter(class_slug=class_slug)[0].student_class
         matching_subjects = StudentSubject.objects.filter(student_class__class_slug=class_slug)
         subject_slugs = [s.subject_slug for s in matching_subjects]
         if subject_slug in subject_slugs:
+            subject_slug_name = StudentSubject.objects.filter(subject_slug=subject_slug, student_class__class_slug=class_slug)[0].student_subject
             matching_chapters = StudentChapter.objects.filter(student_subject__subject_slug=subject_slug, student_subject__student_class__class_slug=class_slug)
 
             if request.method == "POST":
@@ -124,7 +130,7 @@ def student_subject(request, class_slug, subject_slug):
             return render(
                 request=request,
                 template_name="main/chapters.html",
-                context={"student_chapters": matching_chapters, "class_slug": class_slug, "subject_slug": subject_slug, "form": form}
+                context={"student_chapters": matching_chapters, "class_slug": class_slug, "class_slug_name": class_slug_name, "subject_slug": subject_slug, "subject_slug_name": subject_slug_name, "form": form}
                 )
         else:
             return HttpResponse(f"{subject_slug} subject is not present!")
@@ -132,14 +138,18 @@ def student_subject(request, class_slug, subject_slug):
         return HttpResponse(f"{class_slug} class is not present!")
 
 def student_chapter(request, class_slug, subject_slug, chapter_slug):
+    # Add Edit/Delete Section Form?
     class_slugs = [c.class_slug for c in StudentClass.objects.all()]
     if class_slug in class_slugs:
+        class_slug_name = StudentClass.objects.filter(class_slug=class_slug)[0].student_class
         matching_subjects = StudentSubject.objects.filter(student_class__class_slug=class_slug)
         subject_slugs = [s.subject_slug for s in matching_subjects]
         if subject_slug in subject_slugs:
+            subject_slug_name = StudentSubject.objects.filter(subject_slug=subject_slug, student_class__class_slug=class_slug)[0].student_subject
             matching_chapters = StudentChapter.objects.filter(student_subject__subject_slug=subject_slug, student_subject__student_class__class_slug=class_slug)
             chapter_slugs = [c.chapter_slug for c in matching_chapters]
             if chapter_slug in chapter_slugs:
+                chapter_slug_name = StudentChapter.objects.filter(chapter_slug=chapter_slug, student_subject__subject_slug=subject_slug, student_subject__student_class__class_slug=class_slug)[0].student_chapter
                 matching_sections = StudentSection.objects.filter(student_chapter__chapter_slug=chapter_slug, student_chapter__student_subject__subject_slug=subject_slug, student_chapter__student_subject__student_class__class_slug=class_slug)
 
                 if request.method == "POST":
@@ -155,7 +165,7 @@ def student_chapter(request, class_slug, subject_slug, chapter_slug):
                 return render(
                     request=request,
                     template_name="main/sections.html",
-                    context={"student_sections": matching_sections, "class_slug": class_slug, "subject_slug": subject_slug, "chapter_slug": chapter_slug, "form": form}
+                    context={"student_sections": matching_sections, "class_slug": class_slug, "class_slug_name": class_slug_name, "subject_slug": subject_slug, "subject_slug_name": subject_slug_name, "chapter_slug": chapter_slug, "chapter_slug_name": chapter_slug_name, "form": form}
                     )
             else:
                 return HttpResponse(f"{chapter_slug} chapter is not present!")
@@ -165,23 +175,27 @@ def student_chapter(request, class_slug, subject_slug, chapter_slug):
         return HttpResponse(f"{class_slug} class is not present!")
 
 def student_section(request, class_slug, subject_slug, chapter_slug, section_slug):
-    # Add Edit Section Form?
+    # Add Edit/Delete Section Form?
     class_slugs = [c.class_slug for c in StudentClass.objects.all()]
     if class_slug in class_slugs:
+        class_slug_name = StudentClass.objects.filter(class_slug=class_slug)[0].student_class
         matching_subjects = StudentSubject.objects.filter(student_class__class_slug=class_slug)
         subject_slugs = [s.subject_slug for s in matching_subjects]
         if subject_slug in subject_slugs:
+            subject_slug_name = StudentSubject.objects.filter(subject_slug=subject_slug, student_class__class_slug=class_slug)[0].student_subject
             matching_chapters = StudentChapter.objects.filter(student_subject__subject_slug=subject_slug, student_subject__student_class__class_slug=class_slug)
             chapter_slugs = [c.chapter_slug for c in matching_chapters]
             if chapter_slug in chapter_slugs:
+                chapter_slug_name = StudentChapter.objects.filter(chapter_slug=chapter_slug, student_subject__subject_slug=subject_slug, student_subject__student_class__class_slug=class_slug)[0].student_chapter
                 matching_sections = StudentSection.objects.filter(student_chapter__chapter_slug=chapter_slug, student_chapter__student_subject__subject_slug=subject_slug, student_chapter__student_subject__student_class__class_slug=class_slug)
                 section_slugs = [s.section_slug for s in matching_sections]
                 if section_slug in section_slugs:
+                    section_slug_name = StudentSection.objects.filter(section_slug=section_slug, student_chapter__chapter_slug=chapter_slug, student_chapter__student_subject__subject_slug=subject_slug, student_chapter__student_subject__student_class__class_slug=class_slug)[0].student_section
                     matching_section = matching_sections.filter(section_slug=section_slug)[0]
                     return render(
                         request=request,
                         template_name="main/content.html",
-                        context={"student_section": matching_section, "class_slug": class_slug, "subject_slug": subject_slug, "chapter_slug": chapter_slug, "section_slug": section_slug}
+                        context={"student_section": matching_section, "class_slug": class_slug, "class_slug_name": class_slug_name, "subject_slug": subject_slug, "subject_slug_name": subject_slug_name, "chapter_slug": chapter_slug, "chapter_slug_name": chapter_slug_name, "section_slug": section_slug, "section_slug_name": section_slug_name}
                         )
                 else:
                     return HttpResponse(f"{section_slug} section is not present!")

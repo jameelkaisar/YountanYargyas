@@ -2,6 +2,8 @@
 
 {% block content %}
     <h1>CONTENT</h1>
-    <!-- Display Full Path Here with Links-->
+    <p>
+        <a href="/">Home</a> --&gt; <a href="/classes">Classes</a> --&gt; <a href="/classes/{{ class_slug }}">{{ class_slug_name }}</a> --&gt; <a href="/classes/{{ class_slug }}/{{ subject_slug }}">{{ subject_slug_name }}</a> --&gt; <a href="/classes/{{ class_slug }}/{{ subject_slug }}/{{ chapter_slug }}">{{ chapter_slug_name }}</a> --&gt; {{ section_slug_name }}
+    </p>
     <p>{{ student_section.section_text }}</p>
 {% endblock %}

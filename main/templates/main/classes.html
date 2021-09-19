@@ -2,6 +2,9 @@
 
 {% block content %}
     <h1>CLASSES</h1>
+    <p>
+        <a href="/">Home</a> --&gt; Classes
+    </p>
     {% for class in student_classes %}
         <p>{{ class.student_class }}, {{ class.class_summary }}, <a href="/classes/{{ class.class_slug }}">{{ class.class_slug }}</a></p>
     {% endfor %}

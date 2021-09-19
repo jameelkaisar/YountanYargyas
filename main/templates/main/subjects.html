@@ -2,6 +2,9 @@
 
 {% block content %}
     <h1>SUBJECTS</h1>
+    <p>
+        <a href="/">Home</a> --&gt; <a href="/classes">Classes</a> --&gt; {{ class_slug_name }}
+    </p>
     {% for subject in student_subjects %}
         <p>{{ subject.student_subject }}, {{ subject.subject_summary }}, <a href="/classes/{{ class_slug }}/{{ subject.subject_slug }}">{{ subject.subject_slug }}</a></p>
     {% endfor %}
