@@ -69,7 +69,7 @@ class StudentSection(models.Model):
     # Image/Media to be added later
     section_slug = models.CharField(max_length=100)
 
-    section_text = models.CharField(max_length=1000)
+    section_text = models.TextField()
 
     student_chapter = models.ForeignKey(StudentChapter, default=1, verbose_name="Chapter", on_delete=models.SET_DEFAULT)
 
