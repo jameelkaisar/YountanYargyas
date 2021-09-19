@@ -87,7 +87,7 @@ def student_class(request, class_slug):
     if class_slug in class_slugs:
         class_slug_name = StudentClass.objects.filter(class_slug=class_slug)[0].student_class
         matching_subjects = StudentSubject.objects.filter(student_class__class_slug=class_slug)
-
+        
         if request.method == "POST":
             form = AddSubject(request.POST)
             if form.is_valid():
