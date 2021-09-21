@@ -9,7 +9,7 @@
         <p>{{ section.student_section }}, {{ section.section_summary }}, <a href="/classes/{{ class_slug }}/{{ subject_slug }}/{{ chapter_slug }}/{{ section.section_slug }}">{{ section.section_slug }}</a></p>
     {% endfor %}
 
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn">Add Section</button>

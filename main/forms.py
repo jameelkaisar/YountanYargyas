@@ -25,6 +25,6 @@ class AddChapter(forms.ModelForm):
 class AddSection(forms.ModelForm):
     class Meta:
         model = StudentSection
-        fields = ["student_section", "section_summary", "section_text", "student_chapter"]
-        labels = {"student_section": "Student Section", "section_summary": "Section Summary", "section_text": "Section Text", "student_chapter": "Student Chapter (FK)"}
+        fields = ["student_section", "section_summary", "section_video", "section_text", "student_chapter"]
+        labels = {"student_section": "Student Section", "section_summary": "Section Summary", "section_video": "Section Video (Optional)" , "section_text": "Section Text", "student_chapter": "Student Chapter (FK)"}
         widgets = {"section_summary": forms.Textarea, "student_chapter": forms.HiddenInput}

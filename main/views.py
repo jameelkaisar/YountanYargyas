@@ -153,9 +153,14 @@ def student_chapter(request, class_slug, subject_slug, chapter_slug):
                 matching_sections = StudentSection.objects.filter(student_chapter__chapter_slug=chapter_slug, student_chapter__student_subject__subject_slug=subject_slug, student_chapter__student_subject__student_class__class_slug=class_slug)
 
                 if request.method == "POST":
-                    form = AddSection(request.POST)
+                    form = AddSection(request.POST, request.FILES)
                     if form.is_valid():
+                        form_instance = form.save(commit=False)
+                        # Change on completely hiding Foreign Key field
+                        form_instance.section_video_base = f"classes/{class_slug}/{subject_slug}/{chapter_slug}/"
+                        print(form_instance.section_video_base, "v")
                         form.save()
+                        messages.info(request, f"Section Added Successfully!")
                     else:
                         for field, errors in form.errors.items():
                             for error in errors:

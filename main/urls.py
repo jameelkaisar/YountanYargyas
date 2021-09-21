@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.urls import path
 from . import views
+from django.conf.urls.static import static
+from django.conf import settings
 
 app_name = "main"
 
@@ -29,3 +31,5 @@ urlpatterns = [
     path("classes/<slug:class_slug>/<slug:subject_slug>/<slug:chapter_slug>", views.student_chapter, name="student_chapter"),
     path("classes/<slug:class_slug>/<slug:subject_slug>/<slug:chapter_slug>/<slug:section_slug>", views.student_section, name="student_section"),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

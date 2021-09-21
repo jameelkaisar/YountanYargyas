@@ -68,11 +68,17 @@ class StudentChapter(models.Model):
         return self.student_chapter
 
 class StudentSection(models.Model):
+    def user_directory_path(instance, filename):
+        # base_dir = "vid/ddd/"
+        print(instance.section_video_base, "m")
+        return f"{instance.section_video_base}{instance.section_slug}.{filename.split('.')[-1]}"
+
     student_section = models.CharField(max_length=100)
     section_summary = models.CharField(max_length=500)
-    # Image/Media to be added later
     section_slug = models.SlugField(max_length=100)
 
+    section_video = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+    section_video_base = models.CharField(max_length=300)
     section_text = models.TextField()
 
     student_chapter = models.ForeignKey(StudentChapter, default=1, verbose_name="Chapter", on_delete=models.SET_DEFAULT)
@@ -86,6 +92,11 @@ class StudentSection(models.Model):
         if self.__class__.objects.filter(section_slug=self.section_slug, student_chapter__chapter_slug=self.student_chapter.chapter_slug, student_chapter__student_subject__subject_slug=self.student_chapter.student_subject.subject_slug, student_chapter__student_subject__student_class__class_slug=self.student_chapter.student_subject.student_class.class_slug).exists():
             raise ValidationError(message=f'StudentSection with (class_slug=\"{self.student_chapter.student_subject.student_class.class_slug}\", subject_slug=\"{self.student_chapter.student_subject.subject_slug}\", chapter_slug=\"{self.student_chapter.chapter_slug}\", section_slug=\"{self.section_slug}\") already exists.',
                                   code='unique_together',)
+
+    def delete(self, *args, **kwargs):
+        if self.section_video:
+            self.section_video.storage.delete(self.section_video.name)
+        super(StudentSection, self).delete(*args, **kwargs)
 
     def __str__(self):
         return self.student_section
