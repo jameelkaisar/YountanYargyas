@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-from os import getenv
+from os import getenv, path
 from dotenv import load_dotenv
 load_dotenv()
 SECRET_KEY = str(getenv('SECRET_KEY'))
@@ -125,7 +125,5 @@ STATIC_URL = '/static/'
 
 # Media files
 
-import os
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_ROOT = path.join(BASE_DIR, 'media/')
 MEDIA_URL = '/media/'

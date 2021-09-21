@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Book, StudentClass, StudentSubject, StudentChapter, StudentSection
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
@@ -12,8 +12,7 @@ def homepage(request):
     # return HttpResponse("Hello <strong>World</strong>!")
     return render(
         request=request,
-        template_name="main/home.html",
-        context={"books": Book.objects.all}
+        template_name="main/home.html"
         )
 
 def register(request):
@@ -157,8 +156,8 @@ def student_chapter(request, class_slug, subject_slug, chapter_slug):
                     if form.is_valid():
                         form_instance = form.save(commit=False)
                         # Change on completely hiding Foreign Key field
+                        # Override Save Method?
                         form_instance.section_video_base = f"classes/{class_slug}/{subject_slug}/{chapter_slug}/"
-                        print(form_instance.section_video_base, "v")
                         form.save()
                         messages.info(request, f"Section Added Successfully!")
                     else:

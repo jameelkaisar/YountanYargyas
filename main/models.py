@@ -69,8 +69,6 @@ class StudentChapter(models.Model):
 
 class StudentSection(models.Model):
     def user_directory_path(instance, filename):
-        # base_dir = "vid/ddd/"
-        print(instance.section_video_base, "m")
         return f"{instance.section_video_base}{instance.section_slug}.{filename.split('.')[-1]}"
 
     student_section = models.CharField(max_length=100)
@@ -100,11 +98,3 @@ class StudentSection(models.Model):
 
     def __str__(self):
         return self.student_section
-
-class Book(models.Model):
-    book_title = models.CharField(max_length=100)
-    book_description = models.TextField()
-    book_published = models.DateTimeField("When was this book published?", default=datetime.now())
-
-    def __str__(self):
-        return self.book_title
