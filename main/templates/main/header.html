@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="{% static 'main/icons/icon.css' %}">
   <link rel="stylesheet" href="{% static 'main/css/materialize.min.css' %}">
+  <link rel="stylesheet" href="{% static 'main/css/custom.css' %}">
   <link rel="stylesheet" href="{% static 'main/css/breadcrumbs.css' %}">
   <script src="{% static 'main/js/materialize.min.js' %}"></script>
 </head>
@@ -20,6 +21,8 @@
     {% block content %}
     {% endblock %}
   </div>
+
+  {% include "main/includes/footer.html" %}
 
   <script>
     M.AutoInit();

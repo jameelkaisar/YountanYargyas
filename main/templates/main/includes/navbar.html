@@ -1,9 +1,10 @@
 <nav class="nav-extended">
   <div class="nav-wrapper">
-    <a href="/" class="brand-logo hide-on-small-only">Yountan Yargyas</a>
+    <a href="/" class="brand-logo hide-on-med-and-down" style="margin-left: 15%;">Yountan Yargyas</a>
+    <a href="/" class="brand-logo hide-on-large-only hide-on-small-only">Yountan Yargyas</a>
     <a href="/" class="brand-logo hide-on-med-and-up">YY</a>
     <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-    <ul id="nav-mobile" class="right hide-on-med-and-down">
+    <ul id="nav-mobile" class="right hide-on-med-and-down" style="margin-right: 15%;">
       {% if user.is_authenticated %}
         <li><a href="/account">{{user.username}}</a></li>
         <li><a href="/logout">Logout</a></li>
@@ -11,10 +12,9 @@
         <li><a href="/login">Login</a></li>
         <li><a href="/register">Register</a></li>
       {% endif %}
-      <li><a href="/help.html">Help</a></li>
-      <li><a href="/contact.html">Contact</a></li>
-      <li><a href="/about.html">About</a></li>
-      <li><a href="/admin.html">Admin Panel</a></li>
+      <li><a href="/help">Help</a></li>
+      <li><a href="/contact">Contact</a></li>
+      <li><a href="/about">About</a></li>
     </ul>
   </div>
 </nav>
@@ -27,8 +27,7 @@
     <li><a href="/login">Login</a></li>
     <li><a href="/register">Register</a></li>
   {% endif %}
-  <li><a href="/help.html">Help</a></li>
-  <li><a href="/contact.html">Contact</a></li>
-  <li><a href="/about.html">About</a></li>
-  <li><a href="/admin.html">Admin Panel</a></li>
+  <li><a href="/help">Help</a></li>
+  <li><a href="/contact">Contact</a></li>
+  <li><a href="/about">About</a></li>
 </ul>
