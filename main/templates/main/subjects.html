@@ -1,17 +1,13 @@
 {% extends "Main/header.html" %}
 
 {% block content %}
-    <p>
-        <nav>
-            <div class="nav-wrapper">
-                <div class="col s12" style="padding-left: 20px; padding-right: 20px;">
-                    <a href="/" class="breadcrumb">Home</a>
-                    <a href="/classes" class="breadcrumb">Classes</a>
-                    <span class="breadcrumb">{{ class_slug_name }}</span>
-                </div>
-            </div>
-        </nav>
-    </p>
+    <div class="z-depth-1">
+        <ul class="breadcrumbs">
+            <li><a href="/">Home</a></li>
+            <li><a href="/classes">Classes</a></li>
+            <li><b>{{ class_slug_name }}</b></li>
+        </ul>
+    </div>
 
     <ul class="collapsible">
         <li>

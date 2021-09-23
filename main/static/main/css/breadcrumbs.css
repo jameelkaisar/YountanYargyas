@@ -1,0 +1,34 @@
+/* Reference: https://www.w3schools.com/howto/howto_css_breadcrumbs.asp */
+
+/* Style the list */
+ul.breadcrumbs {
+  padding: 15px 30px;
+  list-style: none;
+  background-color: #ee6e73;
+}
+
+/* Display list items side by side */
+ul.breadcrumbs li {
+  display: inline;
+  color: #ffffff;
+  font-size: 18px;
+}
+
+/* Add a slash symbol (>) before/behind each list item */
+ul.breadcrumbs li+li:before {
+  padding: 8px;
+  color: #ffffff;
+  content: "\003E\00a0";
+}
+
+/* Add a color to all links inside the list */
+ul.breadcrumbs li a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* Add a color on mouse-over */
+ul.breadcrumbs li a:hover {
+  color: #ffffff;
+  text-decoration: none;
+}

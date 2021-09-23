@@ -1,20 +1,16 @@
 {% extends "Main/header.html" %}
 
 {% block content %}
-    <p>
-        <nav>
-            <div class="nav-wrapper">
-                <div class="col s12" style="padding-left: 20px; padding-right: 20px;">
-                    <a href="/" class="breadcrumb">Home</a>
-                    <a href="/classes" class="breadcrumb">Classes</a>
-                    <a href="/classes/{{ class_slug }}" class="breadcrumb">{{ class_slug_name }}</a>
-                    <a href="/classes/{{ class_slug }}/{{ subject_slug }}" class="breadcrumb">{{ subject_slug_name }}</a>
-                    <a href="/classes/{{ class_slug }}/{{ subject_slug }}/{{ chapter_slug }}" class="breadcrumb">{{ chapter_slug_name }}</a>
-                    <span class="breadcrumb">{{ section_slug_name }}</span>
-                </div>
-            </div>
-        </nav>
-    </p>
+    <div class="z-depth-1">
+        <ul class="breadcrumbs">
+            <li><a href="/">Home</a></li>
+            <li><a href="/classes">Classes</a></li>
+            <li><a href="/classes/{{ class_slug }}">{{ class_slug_name }}</a></li>
+            <li><a href="/classes/{{ class_slug }}/{{ subject_slug }}">{{ subject_slug_name }}</a></li>
+            <li><a href="/classes/{{ class_slug }}/{{ subject_slug }}/{{ chapter_slug }}">{{ chapter_slug_name }}</a></li>
+            <li><b>{{ section_slug_name }}</b></li>
+        </ul>
+    </div>
 
     <div class="card card-panel grey lighten-5 z-depth-1">
         <h3 align="center">{{ student_section.student_section }}</h3>
