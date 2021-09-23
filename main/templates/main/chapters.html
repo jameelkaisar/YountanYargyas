@@ -1,17 +1,42 @@
 {% extends "Main/header.html" %}
 
 {% block content %}
-    <h1>CHAPTERS</h1>
     <p>
-        <a href="/">Home</a> --&gt; <a href="/classes">Classes</a> --&gt; <a href="/classes/{{ class_slug }}">{{ class_slug_name }}</a> --&gt; {{ subject_slug_name }}
+        <nav>
+            <div class="nav-wrapper">
+                <div class="col s12" style="padding-left: 20px; padding-right: 20px;">
+                    <a href="/" class="breadcrumb">Home</a>
+                    <a href="/classes" class="breadcrumb">Classes</a>
+                    <a href="/classes/{{ class_slug }}" class="breadcrumb">{{ class_slug_name }}</a>
+                    <span class="breadcrumb">{{ subject_slug_name }}</span>
+                </div>
+            </div>
+        </nav>
     </p>
-    {% for chapter in student_chapters %}
-        <p>{{ chapter.student_chapter }}, {{ chapter.chapter_summary }}, <a href="/classes/{{ class_slug }}/{{ subject_slug }}/{{ chapter.chapter_slug }}">{{ chapter.chapter_slug }}</a></p>
-    {% endfor %}
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn">Add Chapter</button>
-    </form>
+    <ul class="collapsible">
+        <li>
+            <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Add Chapter</big></div>
+            <div class="collapsible-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Add Chapter</button></p>
+                </form>
+            </div>
+        </li>
+    </ul>
+
+    {% for chapter in student_chapters %}
+        <a href="/classes/{{ class_slug }}/{{ subject_slug }}/{{ chapter.chapter_slug }}" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="card card-panel grey lighten-5 z-depth-1">
+                <span class="card-title"><b>{{ chapter.student_chapter }}</b></span>
+                <p>{{ chapter.chapter_summary|linebreaks }}</p>
+                <div align="right" style=""><!-- display: none; -->
+                    <a class="btn waves-light"><i class="material-icons left">edit</i>Edit</a>
+                    <a class="btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
+                </div>
+            </div>
+        </a>
+    {% endfor %}
 {% endblock %}

@@ -1,17 +1,41 @@
 {% extends "Main/header.html" %}
 
 {% block content %}
-    <h1>SUBJECTS</h1>
     <p>
-        <a href="/">Home</a> --&gt; <a href="/classes">Classes</a> --&gt; {{ class_slug_name }}
+        <nav>
+            <div class="nav-wrapper">
+                <div class="col s12" style="padding-left: 20px; padding-right: 20px;">
+                    <a href="/" class="breadcrumb">Home</a>
+                    <a href="/classes" class="breadcrumb">Classes</a>
+                    <span class="breadcrumb">{{ class_slug_name }}</span>
+                </div>
+            </div>
+        </nav>
     </p>
-    {% for subject in student_subjects %}
-        <p>{{ subject.student_subject }}, {{ subject.subject_summary }}, <a href="/classes/{{ class_slug }}/{{ subject.subject_slug }}">{{ subject.subject_slug }}</a></p>
-    {% endfor %}
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn">Add Subject</button>
-    </form>
+    <ul class="collapsible">
+        <li>
+            <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Add Subject</big></div>
+            <div class="collapsible-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Add Subject</button></p>
+                </form>
+            </div>
+        </li>
+    </ul>
+
+    {% for subject in student_subjects %}
+        <a href="/classes/{{ class_slug }}/{{ subject.subject_slug }}" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="card card-panel grey lighten-5 z-depth-1">
+                <span class="card-title"><b>{{ subject.student_subject }}</b></span>
+                <p>{{ subject.subject_summary|linebreaks }}</p>
+                <div align="right" style=""><!-- display: none; -->
+                    <a class="btn waves-light"><i class="material-icons left">edit</i>Edit</a>
+                    <a class="btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
+                </div>
+            </div>
+        </a>
+    {% endfor %}
 {% endblock %}

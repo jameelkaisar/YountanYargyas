@@ -1,21 +1,37 @@
 {% extends "Main/header.html" %}
 
 {% block content %}
-    <h1>CONTENT</h1>
     <p>
-        <a href="/">Home</a> --&gt; <a href="/classes">Classes</a> --&gt; <a href="/classes/{{ class_slug }}">{{ class_slug_name }}</a> --&gt; <a href="/classes/{{ class_slug }}/{{ subject_slug }}">{{ subject_slug_name }}</a> --&gt; <a href="/classes/{{ class_slug }}/{{ subject_slug }}/{{ chapter_slug }}">{{ chapter_slug_name }}</a> --&gt; {{ section_slug_name }}
+        <nav>
+            <div class="nav-wrapper">
+                <div class="col s12" style="padding-left: 20px; padding-right: 20px;">
+                    <a href="/" class="breadcrumb">Home</a>
+                    <a href="/classes" class="breadcrumb">Classes</a>
+                    <a href="/classes/{{ class_slug }}" class="breadcrumb">{{ class_slug_name }}</a>
+                    <a href="/classes/{{ class_slug }}/{{ subject_slug }}" class="breadcrumb">{{ subject_slug_name }}</a>
+                    <a href="/classes/{{ class_slug }}/{{ subject_slug }}/{{ chapter_slug }}" class="breadcrumb">{{ chapter_slug_name }}</a>
+                    <span class="breadcrumb">{{ section_slug_name }}</span>
+                </div>
+            </div>
+        </nav>
     </p>
-    <p>
+
+    <div class="card card-panel grey lighten-5 z-depth-1">
+        <h3 align="center">{{ student_section.student_section }}</h3>
+        <div class="divider"></div>
         {% if student_section.section_video %}
-            <video width='400' controls>
+            <video class="responsive-video section" controls>
                 <source src="{{ student_section.section_video.url }}" type='video/mp4'>
                 Your browser does not support the video tag.
             </video>
-        {% else %}
-            Video Unavailable!
+            <div class="divider"></div>
         {% endif %}
-    </p>
-    <p>{{ student_section.student_section }}</p>
-    <p><small>{{ student_section.section_summary }}</small></p>
-    <p>{{ student_section.section_text }}</p>
+        <p>{{ student_section.section_summary|linebreaks }}</p>
+        <div class="divider"></div>
+        <p>{{ student_section.section_text|linebreaks }}</p>
+        <div align="right" style=""><!-- display: none; -->
+            <a class="btn waves-light"><i class="material-icons left">edit</i>Edit</a>
+            <a class="btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
+        </div>
+    </div>
 {% endblock %}
