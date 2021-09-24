@@ -6,13 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="{% static 'main/icons/icon.css' %}">
   <link rel="stylesheet" href="{% static 'main/css/materialize.min.css' %}">
-  <link rel="stylesheet" href="{% static 'main/css/custom.css' %}">
-  <link rel="stylesheet" href="{% static 'main/css/breadcrumbs.css' %}">
   <link rel="stylesheet" href="{% static 'tinymce/css/prism.css' %}">
+  <link rel="stylesheet" href="{% static 'main/css/breadcrumbs.css' %}">
+  <link rel="stylesheet" href="{% static 'main/css/custom.css' %}">
   <script src="{% static 'main/js/materialize.min.js' %}"></script>
-  <script src="{% static 'tinymce/tinymce.min.js' %}"></script>
-  <script src="{% static 'django_tinymce/init_tinymce.js' %}"></script>
-  <script src="{% static 'tinymce/js/prism.js' %}"></script>
 </head>
 
 <body>
@@ -28,6 +25,9 @@
 
   {% include "main/includes/footer.html" %}
 
+  <script src="{% static 'tinymce/tinymce.min.js' %}"></script>
+  <script src="{% static 'django_tinymce/init_tinymce.js' %}"></script>
+  <script src="{% static 'tinymce/js/prism.js' %}"></script>
   <script>
     M.AutoInit();
   </script>
