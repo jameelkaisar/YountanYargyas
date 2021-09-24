@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .models import StudentClass, StudentSubject, StudentChapter, StudentSection
+from django.db import models
+from tinymce.widgets import TinyMCE
 
 # Register your models here.
 
@@ -10,7 +12,10 @@ from .models import StudentClass, StudentSubject, StudentChapter, StudentSection
 #     ]
 # admin.site.register(Book, BookAdmin)
 
+class StudentSectionAdmin(admin.ModelAdmin):
+   formfield_overrides = {models.TextField: {'widget': TinyMCE()}}
+
 admin.site.register(StudentClass)
 admin.site.register(StudentSubject)
 admin.site.register(StudentChapter)
-admin.site.register(StudentSection)
+admin.site.register(StudentSection, StudentSectionAdmin)
