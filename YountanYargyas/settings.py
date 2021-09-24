@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main.apps.MainConfig',
+    'tinymce',
 ]
 
 MIDDLEWARE = [
@@ -103,6 +104,27 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# TinyMCE Configuration
+
+TINYMCE_DEFAULT_CONFIG = {
+    "height": "512px",
+    "width": "100%",
+    "menubar": "file edit view insert format tools table help",
+    "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks codesample code fullscreen insertdatetime media table paste code help wordcount spellchecker",
+    "toolbar": "fullscreen preview save print | undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | insertfile image media pageembed template link codesample anchor | a11ycheck ltr rtl | showcomments addcomment code",
+    "custom_undo_redo_levels": 10,
+    # "codesample_languages": [{"text": "HTML/XML", "value": "markup"},
+    #                          {"text": "JavaScript", "value": "javascript"},
+    #                          {"text": "CSS", "value": "css"},
+    #                          {"text": "PHP", "value": "php"},
+    #                          {"text": "Ruby", "value": "ruby"},
+    #                          {"text": "Python", "value": "python"},
+    #                          {"text": "Java", "value": "java"},
+    #                          {"text": "C", "value": "c"},
+    #                          {"text": "C#", "value": "csharp"},
+    #                          {"text": "C++", "value": "cpp"},],
+}
+# TINYMCE_SPELLCHECKER = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/

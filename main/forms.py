@@ -1,6 +1,7 @@
 from django import forms
 from .models import StudentClass, StudentSubject, StudentChapter, StudentSection
- 
+from tinymce.widgets import TinyMCE
+
 class AddClass(forms.ModelForm):
     class Meta:
         model = StudentClass
@@ -28,4 +29,4 @@ class AddSection(forms.ModelForm):
         model = StudentSection
         fields = ["student_section", "section_summary", "section_video", "section_text", "student_chapter"]
         labels = {"student_section": "Section Name", "section_summary": "Section Summary", "section_video": "", "section_text": "Section Text", "student_chapter": "Student Chapter (FK)"}
-        widgets = {"section_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "section_video": forms.FileInput(attrs={"style": "display: none;"}), "section_text": forms.Textarea(attrs={"class": "materialize-textarea"}), "student_chapter": forms.HiddenInput()}
+        widgets = {"section_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "section_video": forms.FileInput(attrs={"style": "display: none;"}), "section_text": TinyMCE(), "student_chapter": forms.HiddenInput()}
