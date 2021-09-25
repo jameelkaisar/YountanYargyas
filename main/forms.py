@@ -6,14 +6,14 @@ from tinymce.widgets import TinyMCE
 class MyRegistrationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(MyRegistrationForm, self).__init__(*args, **kwargs)
-    username = forms.CharField(widget=forms.TextInput(attrs={"autocapitalize": "none", "autocomplete": "username", "maxlength": "150", "onkeypress": "return /[a-zA-Z0-9_]/i.test(event.key)"}), label="Username")
+    username = forms.CharField(widget=forms.TextInput(attrs={"autocapitalize": "none", "autocomplete": "username", "maxlength": "150", "autofocus": "autofocus"}), label="Username")
     password1 = forms.CharField(widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}), label="Password")
     password2 = forms.CharField(widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}), label="Confirm Password")
 
 class MyLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(MyLoginForm, self).__init__(*args, **kwargs)
-    username = forms.CharField(widget=forms.TextInput(attrs={"autocapitalize": "none", "autocomplete": "username"}), label="Username")
+    username = forms.CharField(widget=forms.TextInput(attrs={"autocapitalize": "none", "autocomplete": "username", "maxlength": "150", "autofocus": "autofocus"}), label="Username")
     password = forms.CharField(widget=forms.PasswordInput(attrs={"autocomplete": "current-password"}), label="Password")
 
 class AddClass(forms.ModelForm):
