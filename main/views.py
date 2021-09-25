@@ -1,27 +1,43 @@
 from django.shortcuts import render, redirect
 from .models import StudentClass, StudentSubject, StudentChapter, StudentSection
 from django.http import HttpResponse
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
-from .forms import AddClass, AddSubject, AddChapter, AddSection
+from .forms import MyRegistrationForm, MyLoginForm, AddClass, AddSubject, AddChapter, AddSection
 
 # Create your views here.
 
 def homepage(request):
-    # return HttpResponse("Hello <strong>World</strong>!")
     return render(
         request=request,
         template_name="main/home.html"
         )
 
+def aboutpage(request):
+    return render(
+        request=request,
+        template_name="main/about.html"
+        )
+
+def contactpage(request):
+    return render(
+        request=request,
+        template_name="main/contact.html"
+        )
+
+def helppage(request):
+    return render(
+        request=request,
+        template_name="main/help.html"
+        )
+
 def register(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = MyRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get("username")
-            messages.success(request, f"New Account Created: {username}")
+            messages.info(request, f"New Account Created: {username}")
             login(request, user)
             messages.info(request, f"You are now logged in as {username}!")
             return redirect("main:homepage")
@@ -29,7 +45,7 @@ def register(request):
             for msg in form.error_messages:
                 messages.error(request, f"{msg}: {form.error_messages[msg]}")
 
-    form = UserCreationForm
+    form = MyRegistrationForm
     return render(
         request=request,
         template_name="main/register.html",
@@ -37,7 +53,7 @@ def register(request):
 
 def login_request(request):
     if request.method == "POST":
-        form = AuthenticationForm(request, request.POST)
+        form = MyLoginForm(request, request.POST)
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password  = form.cleaned_data.get("password")
@@ -51,7 +67,7 @@ def login_request(request):
         else:
             messages.error(request, "Invalid username or password!")
 
-    form = AuthenticationForm()
+    form = MyLoginForm()
     return render(
         request=request,
         template_name="main/login.html",
@@ -61,6 +77,12 @@ def logout_request(request):
     logout(request)
     messages.info(request, "Logged out successfully!")
     return redirect("main:homepage")
+
+def profile(request):
+    return render(
+        request=request,
+        template_name="main/profile.html"
+        )
 
 def student_classes(request):
     # Add Edit/Delete Class Form?

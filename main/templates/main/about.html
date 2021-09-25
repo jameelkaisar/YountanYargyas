@@ -4,19 +4,15 @@
     <div class="z-depth-1">
         <ul class="breadcrumbs">
             <li><a href="/">Home</a></li>
-            <li><b>Register</b></li>
+            <li><b>About</b></li>
         </ul>
     </div>
 
     <div class="card card-panel grey lighten-5 z-depth-1">
-        <h3 align="center">Register</h3>
+        <h3 align="center">About</h3>
         <div class="divider"></div>
         <p>
-            <form method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Register</button></p>
-            </form>
+            About Text
         </p>
     </div>
 {% endblock %}

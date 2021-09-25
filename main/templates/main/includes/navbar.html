@@ -6,7 +6,7 @@
     <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
     <ul id="nav-mobile" class="right hide-on-med-and-down" style="margin-right: 15%;">
       {% if user.is_authenticated %}
-        <li><a href="/account">{{user.username}}</a></li>
+        <li><a href="/profile">{{user.username}}</a></li>
         <li><a href="/logout">Logout</a></li>
       {% else %}
         <li><a href="/login">Login</a></li>
@@ -21,7 +21,7 @@
 
 <ul class="sidenav" id="mobile-demo">
   {% if user.is_authenticated %}
-    <li><a href="/account">{{user.username}}</a></li>
+    <li><a href="/profile">{{user.username}}</a></li>
     <li><a href="/logout">Logout</a></li>
   {% else %}
     <li><a href="/login">Login</a></li>

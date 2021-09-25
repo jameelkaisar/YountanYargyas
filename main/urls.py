@@ -22,9 +22,13 @@ app_name = "main"
 
 urlpatterns = [
     path("", views.homepage, name="homepage"),
+    path("about/", views.aboutpage, name="about"),
+    path("contact/", views.contactpage, name="contact"),
+    path("help/", views.helppage, name="help"),
     path("register/", views.register, name="register"),
     path("login/", views.login_request, name="login"),
     path("logout/", views.logout_request, name="logout"),
+    path("profile/", views.profile, name="profile"),
     path("classes/", views.student_classes, name="classes"),
     path("classes/<slug:class_slug>", views.student_class, name="student_class"),
     path("classes/<slug:class_slug>/<slug:subject_slug>", views.student_subject, name="student_subject"),

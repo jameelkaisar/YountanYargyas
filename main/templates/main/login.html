@@ -1,13 +1,22 @@
-{% extends "Main/header.html" %}
+{% extends "main/includes/header.html" %}
 
 {% block content %}
-    <h1>LOGIN</h1>
+    <div class="z-depth-1">
+        <ul class="breadcrumbs">
+            <li><a href="/">Home</a></li>
+            <li><b>Login</b></li>
+        </ul>
+    </div>
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn">Login</button>
-    </form>
-
-    <p>or <a href="/register">register</a> instead...</p>
+    <div class="card card-panel grey lighten-5 z-depth-1">
+        <h3 align="center">Login</h3>
+        <div class="divider"></div>
+        <p>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Login</button></p>
+            </form>
+        </p>
+    </div>
 {% endblock %}
