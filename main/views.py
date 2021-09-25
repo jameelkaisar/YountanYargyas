@@ -91,6 +91,7 @@ def student_classes(request):
         form = AddClass(request.POST)
         if form.is_valid():
             form.save()
+            messages.info(request, "Class Added Successfully!")
         else:
             for field, errors in form.errors.items():
                 for error in errors:
@@ -114,6 +115,7 @@ def student_class(request, class_slug):
             form = AddSubject(request.POST)
             if form.is_valid():
                 form.save()
+                messages.info(request, "Subject Added Successfully!")
             else:
                 for field, errors in form.errors.items():
                     for error in errors:
@@ -143,6 +145,7 @@ def student_subject(request, class_slug, subject_slug):
                 form = AddChapter(request.POST)
                 if form.is_valid():
                     form.save()
+                    messages.info(request, "Chapter Added Successfully!")
                 else:
                     for field, errors in form.errors.items():
                         for error in errors:
@@ -182,7 +185,7 @@ def student_chapter(request, class_slug, subject_slug, chapter_slug):
                         # Override Save Method?
                         form_instance.section_video_base = f"classes/{class_slug}/{subject_slug}/{chapter_slug}/"
                         form.save()
-                        messages.info(request, f"Section Added Successfully!")
+                        messages.info(request, "Section Added Successfully!")
                     else:
                         for field, errors in form.errors.items():
                             for error in errors:

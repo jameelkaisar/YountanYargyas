@@ -19,7 +19,7 @@ class StudentClass(models.Model):
         self.class_slug = slugify(self.student_class)
         super(StudentClass, self).validate_unique(*args, **kwargs)
         if self.__class__.objects.filter(class_slug=self.class_slug).exists():
-            raise ValidationError(message=f'StudentClass with (class_slug=\"{self.class_slug}\") already exists.',
+            raise ValidationError(message=f"Class with name \"{self.student_class}\" already exists.",
                                   code='unique_together',)
 
     def __str__(self):
@@ -40,7 +40,7 @@ class StudentSubject(models.Model):
         self.subject_slug = slugify(self.student_subject)
         super(StudentSubject, self).validate_unique(*args, **kwargs)
         if self.__class__.objects.filter(subject_slug=self.subject_slug, student_class__class_slug=self.student_class.class_slug).exists():
-            raise ValidationError(message=f'StudentSubject with (class_slug=\"{self.student_class.class_slug}\", subject_slug=\"{self.subject_slug}\") already exists.',
+            raise ValidationError(message=f"Subject with name \"{self.student_subject}\" already exists.",
                                   code='unique_together',)
 
     def __str__(self):
@@ -61,7 +61,7 @@ class StudentChapter(models.Model):
         self.chapter_slug = slugify(self.student_chapter)
         super(StudentChapter, self).validate_unique(*args, **kwargs)
         if self.__class__.objects.filter(chapter_slug=self.chapter_slug, student_subject__subject_slug=self.student_subject.subject_slug, student_subject__student_class__class_slug=self.student_subject.student_class.class_slug).exists():
-            raise ValidationError(message=f'StudentChapter with (class_slug=\"{self.student_subject.student_class.class_slug}\", subject_slug=\"{self.student_subject.subject_slug}\", chapter_slug=\"{self.chapter_slug}\") already exists.',
+            raise ValidationError(message=f"Chapter with name \"{self.student_chapter}\" already exists.",
                                   code='unique_together',)
 
     def __str__(self):
@@ -88,7 +88,7 @@ class StudentSection(models.Model):
         self.section_slug = slugify(self.student_section)
         super(StudentSection, self).validate_unique(*args, **kwargs)
         if self.__class__.objects.filter(section_slug=self.section_slug, student_chapter__chapter_slug=self.student_chapter.chapter_slug, student_chapter__student_subject__subject_slug=self.student_chapter.student_subject.subject_slug, student_chapter__student_subject__student_class__class_slug=self.student_chapter.student_subject.student_class.class_slug).exists():
-            raise ValidationError(message=f'StudentSection with (class_slug=\"{self.student_chapter.student_subject.student_class.class_slug}\", subject_slug=\"{self.student_chapter.student_subject.subject_slug}\", chapter_slug=\"{self.student_chapter.chapter_slug}\", section_slug=\"{self.section_slug}\") already exists.',
+            raise ValidationError(message=f"Section with name \"{self.student_section}\" already exists.",
                                   code='unique_together',)
 
     def delete(self, *args, **kwargs):
