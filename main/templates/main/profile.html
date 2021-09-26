@@ -12,7 +12,18 @@
         <h3 align="center">{{user.username}}</h3>
         <div class="divider"></div>
         <p>
-            Profile of {{user.username}}
+            <table class="highlight centered">
+                <tbody>
+                    <tr>
+                        <td>Username</td>
+                        <td>{{user.username}}</td>
+                    </tr>
+                    <tr>
+                        <td>Registration</td>
+                        <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </p>
     </div>
 {% endblock %}

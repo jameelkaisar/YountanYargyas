@@ -10,27 +10,55 @@
         </ul>
     </div>
 
-    <ul class="collapsible">
-        <li>
-            <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Add Chapter</big></div>
-            <div class="collapsible-body">
-                <form method="POST">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Add Chapter</button></p>
-                </form>
-            </div>
-        </li>
-    </ul>
+    {% if  user.is_superuser %}
+        <ul class="collapsible">
+            <li>
+                <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Add Chapter</big></div>
+                <div class="collapsible-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Add Chapter</button></p>
+                    </form>
+                </div>
+            </li>
+        </ul>
+    {% else %}
+        {% for group in user.groups.all %}
+            {%  if 'teacher' == group.name %}
+                <ul class="collapsible">
+                    <li>
+                        <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Add Chapter</big></div>
+                        <div class="collapsible-body">
+                            <form method="POST">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Add Chapter</button></p>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 
     {% for chapter in student_chapters %}
         <a href="/classes/{{ class_slug }}/{{ subject_slug }}/{{ chapter.chapter_slug }}" style="display: block; color: inherit; text-decoration: inherit;">
             <div class="card card-panel grey lighten-5 z-depth-1">
                 <span class="card-title"><b>{{ chapter.student_chapter }}</b></span>
                 <p>{{ chapter.chapter_summary|linebreaks }}</p>
-                <div align="right" style=""><!-- display: none; -->
-                    <a class="btn waves-light"><i class="material-icons left">edit</i>Edit</a>
-                    <a class="btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
+                <div align="right">
+                    {% if  user.is_superuser %}
+                        <a class="btn waves-light"><i class="material-icons left">edit</i>Edit</a>
+                        <a class="btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
+                    {% else %}
+                        {% for group in user.groups.all %}
+                            {%  if 'teacher' == group.name %}
+                                <a class="btn waves-light"><i class="material-icons left">edit</i>Edit</a>
+                                <a class="btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </a>

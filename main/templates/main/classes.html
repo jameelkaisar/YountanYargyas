@@ -8,28 +8,58 @@
         </ul>
     </div>
 
-    <ul class="collapsible">
-        <li>
-            <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Add Class</big></div>
-            <div class="collapsible-body">
-                <form method="POST">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Add Class</button></p>
-                </form>
-            </div>
-        </li>
-    </ul>
+    {% if  user.is_superuser %}
+        <ul class="collapsible">
+            <li>
+                <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Add Class</big></div>
+                <div class="collapsible-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Add Class</button></p>
+                    </form>
+                </div>
+            </li>
+        </ul>
+    {% else %}
+        {% for group in user.groups.all %}
+            {%  if 'teacher' == group.name %}
+                <ul class="collapsible">
+                    <li>
+                        <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Add Class</big></div>
+                        <div class="collapsible-body">
+                            <form method="POST">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Add Class</button></p>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 
     {% for class in student_classes %}
         <a href="/classes/{{ class.class_slug }}" style="display: block; color: inherit; text-decoration: inherit;">
             <div class="card card-panel grey lighten-5 z-depth-1">
                 <span class="card-title"><b>{{ class.student_class }}</b></span>
                 <p>{{ class.class_summary|linebreaks }}</p>
-                <div align="right" style=""><!-- display: none; -->
-                    <a class="btn waves-light"><i class="material-icons left">edit</i>Edit</a>
-                    <a class="btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
-                </div>
+                {% if  user.is_superuser %}
+                    <div align="right">
+                        <a class="btn waves-light"><i class="material-icons left">edit</i>Edit</a>
+                        <a class="btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
+                    </div>
+                {% else %}
+                    {% for group in user.groups.all %}
+                        {%  if 'teacher' == group.name %}
+                            <div align="right">
+                                <a class="btn waves-light"><i class="material-icons left">edit</i>Edit</a>
+                                <a class="btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
             </div>
         </a>
     {% endfor %}

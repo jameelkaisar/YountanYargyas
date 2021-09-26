@@ -32,58 +32,71 @@ def helppage(request):
         )
 
 def register(request):
-    if request.method == "POST":
-        form = MyRegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get("username")
-            messages.info(request, f"New Account Created: {username}")
-            login(request, user)
-            messages.info(request, f"You are now logged in as {username}!")
-            return redirect("main:homepage")
-        else:
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, error)
-
-    form = MyRegistrationForm
-    return render(
-        request=request,
-        template_name="main/register.html",
-        context={"form": form})
-
-def login_request(request):
-    if request.method == "POST":
-        form = MyLoginForm(request, request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get("username")
-            password  = form.cleaned_data.get("password")
-            user = authenticate(username=username, password=password)
-            if user is not None:
+    if request.user.is_authenticated:
+        messages.info(request, "You are already logged in!")
+        return redirect("main:homepage")
+    else:
+        if request.method == "POST":
+            form = MyRegistrationForm(request.POST)
+            if form.is_valid():
+                user = form.save()
+                username = form.cleaned_data.get("username")
+                messages.info(request, f"New Account Created: {username}")
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}!")
                 return redirect("main:homepage")
             else:
-                messages.error(request, "Invalid username or password!")
-        else:
-            messages.error(request, "Invalid username or password!")
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, error)
 
-    form = MyLoginForm()
-    return render(
-        request=request,
-        template_name="main/login.html",
-        context={"form": form})
+        form = MyRegistrationForm
+        return render(
+            request=request,
+            template_name="main/register.html",
+            context={"form": form})
+
+def login_request(request):
+    if request.user.is_authenticated:
+        messages.info(request, "You are already logged in!")
+        return redirect("main:homepage")
+    else:
+        if request.method == "POST":
+            form = MyLoginForm(request, request.POST)
+            if form.is_valid():
+                username = form.cleaned_data.get("username")
+                password  = form.cleaned_data.get("password")
+                user = authenticate(username=username, password=password)
+                if user is not None:
+                    login(request, user)
+                    messages.info(request, f"You are now logged in as {username}!")
+                    return redirect("main:homepage")
+                else:
+                    messages.error(request, "Invalid username or password!")
+            else:
+                messages.error(request, "Invalid username or password!")
+
+        form = MyLoginForm()
+        return render(
+            request=request,
+            template_name="main/login.html",
+            context={"form": form})
 
 def logout_request(request):
-    logout(request)
-    messages.info(request, "Logged out successfully!")
+    if request.user.is_authenticated:
+        logout(request)
+        messages.info(request, "Logged out successfully!")
     return redirect("main:homepage")
 
 def profile(request):
-    return render(
-        request=request,
-        template_name="main/profile.html"
-        )
+    if request.user.is_authenticated:
+        return render(
+            request=request,
+            template_name="main/profile.html"
+            )
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect("main:login")
 
 def student_classes(request):
     # Add Edit/Delete Class Form?
