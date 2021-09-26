@@ -50,19 +50,21 @@
             <div class="card card-panel grey lighten-5 z-depth-1">
                 <span class="card-title"><b>{{ section.student_section }}</b></span>
                 <p>{{ section.section_summary|linebreaks }}</p>
-                <div align="right">
-                    {% if  user.is_superuser %}
+                {% if  user.is_superuser %}
+                    <div align="right">
                         <a class="btn waves-light"><i class="material-icons left">edit</i>Edit</a>
                         <a class="btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
-                    {% else %}
-                        {% for group in user.groups.all %}
-                            {%  if 'teacher' == group.name %}
+                    </div>
+                {% else %}
+                    {% for group in user.groups.all %}
+                        {%  if 'teacher' == group.name %}
+                            <div align="right">
                                 <a class="btn waves-light"><i class="material-icons left">edit</i>Edit</a>
                                 <a class="btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
-                            {% endif %}
-                        {% endfor %}
-                    {% endif %}
-                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
             </div>
         </a>
     {% endfor %}

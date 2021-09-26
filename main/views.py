@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from .models import StudentClass, StudentSubject, StudentChapter, StudentSection
 from django.http import HttpResponse
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib import messages
-from .forms import MyRegistrationForm, MyLoginForm, AddClass, AddSubject, AddChapter, AddSection
+from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection
 
 # Create your views here.
 
@@ -81,6 +81,29 @@ def login_request(request):
             request=request,
             template_name="main/login.html",
             context={"form": form})
+
+def change_password(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            form = ChangePasswordForm(request.user, request.POST)
+            if form.is_valid():
+                user = form.save()
+                update_session_auth_hash(request, user)
+                messages.info(request, "Your password was changed successfully!")
+                return redirect("main:profile")
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, error)
+
+        form = ChangePasswordForm(request.user)
+        return render(
+            request=request,
+            template_name="main/change_password.html",
+            context={"form": form})
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect("main:login")
 
 def logout_request(request):
     if request.user.is_authenticated:
