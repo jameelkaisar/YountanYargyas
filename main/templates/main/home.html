@@ -1,6 +1,126 @@
 {% extends "main/includes/header.html" %}
+{% load static %}
 
 {% block content %}
-    <h1>HOMEPAGE</h1>
-    <p><a href="/classes">CLASSES</a></p>
+    <div class="parallax-container" style="position: absolute; left: 0; right: 0; width: 100%; height: 300px; box-shadow: inset 0 0 0 100vmax rgba(0,0,0,.5);">
+        <div class="parallax"><img src="{% static 'main/images/meshnet.jpeg' %}"></div>
+    </div>
+    <div style="height: 300px;"></div>
+
+    <div class="row" style="margin-top: -100px;">
+        <a href="/classes" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="col s12 m6 l4">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="https://materializecss.com/images/sample-1.jpg">
+                        <span class="card-title"><b>Curricular Learning</b></span>
+                        <a href="#modal1" class="btn-floating halfway-fab waves-effect waves-light red modal-trigger"><i class="material-icons">info_outline</i></a>
+                    </div>
+                    <div class="card-content">
+                        <p>Short Text About Curricular Learning.</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <a href="/" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="col s12 m6 l4">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="https://materializecss.com/images/sample-1.jpg">
+                        <span class="card-title"><b>Global Learning</b></span>
+                        <a href="#modal2" class="btn-floating halfway-fab waves-effect waves-light red modal-trigger"><i class="material-icons">info_outline</i></a>
+                        
+                    </div>
+                    <div class="card-content">
+                        <p>Short Text About Global Learning.</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <a href="/" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="col s12 m6 l4">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="https://materializecss.com/images/sample-1.jpg">
+                        <span class="card-title"><b>Ladakhi Learning</b></span>
+                        <a href="#modal3" class="btn-floating halfway-fab waves-effect waves-light red modal-trigger"><i class="material-icons">info_outline</i></a>
+                    </div>
+                    <div class="card-content">
+                        <p>Short Text About Ladakhi Learning.</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <a href="/classes" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="col s12 m6 l4">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="https://materializecss.com/images/sample-1.jpg">
+                        <span class="card-title"><b>Curricular Learning</b></span>
+                        <a href="#modal1" class="btn-floating halfway-fab waves-effect waves-light red modal-trigger"><i class="material-icons">info_outline</i></a>
+                    </div>
+                    <div class="card-content">
+                        <p>Short Text About Curricular Learning.</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <a href="/" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="col s12 m6 l4">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="https://materializecss.com/images/sample-1.jpg">
+                        <span class="card-title"><b>Global Learning</b></span>
+                        <a href="#modal2" class="btn-floating halfway-fab waves-effect waves-light red modal-trigger"><i class="material-icons">info_outline</i></a>
+                        
+                    </div>
+                    <div class="card-content">
+                        <p>Short Text About Global Learning.</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <a href="/" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="col s12 m6 l4">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="https://materializecss.com/images/sample-1.jpg">
+                        <span class="card-title"><b>Ladakhi Learning</b></span>
+                        <a href="#modal3" class="btn-floating halfway-fab waves-effect waves-light red modal-trigger"><i class="material-icons">info_outline</i></a>
+                    </div>
+                    <div class="card-content">
+                        <p>Short Text About Ladakhi Learning.</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <h4>Curricular Learning</h4>
+            <p>Long Text About Curricular Learning.</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+        </div>
+    </div>
+    <div id="modal2" class="modal">
+        <div class="modal-content">
+            <h4>Global Learning</h4>
+            <p>Long Text About Global Learning.</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+        </div>
+    </div>
+    <div id="modal3" class="modal">
+        <div class="modal-content">
+            <h4>Ladakhi Learning</h4>
+            <p>Long Text About Ladakhi Learning.</p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+        </div>
+    </div>
 {% endblock %}

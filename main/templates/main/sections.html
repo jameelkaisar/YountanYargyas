@@ -52,15 +52,15 @@
                 <p>{{ section.section_summary|linebreaks }}</p>
                 {% if  user.is_superuser %}
                     <div align="right">
-                        <a class="btn waves-light"><i class="material-icons left">edit</i>Edit</a>
-                        <a class="btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
+                        <a href="#" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
+                        <a href="#" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
                     </div>
                 {% else %}
                     {% for group in user.groups.all %}
                         {%  if 'teacher' == group.name %}
                             <div align="right">
-                                <a class="btn waves-light"><i class="material-icons left">edit</i>Edit</a>
-                                <a class="btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
+                                <a href="#" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
+                                <a href="#" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
                             </div>
                         {% endif %}
                     {% endfor %}
