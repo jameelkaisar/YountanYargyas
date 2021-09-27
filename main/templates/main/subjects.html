@@ -63,5 +63,9 @@
                 {% endif %}
             </div>
         </a>
+    {% empty %}
+        <div class="card card-panel grey lighten-5 z-depth-1" align="center">
+            <span class="card-title"><b>This section is empty!</b></span>
+        </div>
     {% endfor %}
 {% endblock %}
