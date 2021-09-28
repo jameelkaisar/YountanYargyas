@@ -103,7 +103,7 @@ def change_password(request):
             context={"form": form})
     else:
         messages.error(request, "You must be logged in to view this page!")
-        return redirect("main:login")
+        return redirect("main:login_request")
 
 def logout_request(request):
     if request.user.is_authenticated:
@@ -119,7 +119,7 @@ def profile(request):
             )
     else:
         messages.error(request, "You must be logged in to view this page!")
-        return redirect("main:login")
+        return redirect("main:login_request")
 
 def student_classes(request):
     # Add Edit/Delete Class Form?
@@ -164,7 +164,8 @@ def student_class(request, class_slug):
             context={"student_subjects": matching_subjects, "class_slug": class_slug, "class_slug_name": class_slug_name, "form": form}
             )
     else:
-        return HttpResponse(f"{class_slug} class is not present!")
+        messages.error(request, f"{class_slug} class is not present!")
+        return redirect("main:student_classes")
 
 def student_subject(request, class_slug, subject_slug):
     # Add Edit/Delete Chapter Form?
@@ -194,9 +195,11 @@ def student_subject(request, class_slug, subject_slug):
                 context={"student_chapters": matching_chapters, "class_slug": class_slug, "class_slug_name": class_slug_name, "subject_slug": subject_slug, "subject_slug_name": subject_slug_name, "form": form}
                 )
         else:
-            return HttpResponse(f"{subject_slug} subject is not present!")
+            messages.error(request, f"{subject_slug} subject is not present!")
+            return redirect("main:student_class", class_slug=class_slug)
     else:
-        return HttpResponse(f"{class_slug} class is not present!")
+        messages.error(request, f"{class_slug} class is not present!")
+        return redirect("main:student_classes")
 
 def student_chapter(request, class_slug, subject_slug, chapter_slug):
     # Add Edit/Delete Section Form?
@@ -234,11 +237,14 @@ def student_chapter(request, class_slug, subject_slug, chapter_slug):
                     context={"student_sections": matching_sections, "class_slug": class_slug, "class_slug_name": class_slug_name, "subject_slug": subject_slug, "subject_slug_name": subject_slug_name, "chapter_slug": chapter_slug, "chapter_slug_name": chapter_slug_name, "form": form}
                     )
             else:
-                return HttpResponse(f"{chapter_slug} chapter is not present!")
+                messages.error(request, f"{chapter_slug} chapter is not present!")
+                return redirect("main:student_subject", class_slug=class_slug, subject_slug=subject_slug)
         else:
-            return HttpResponse(f"{subject_slug} subject is not present!")
+            messages.error(request, f"{subject_slug} subject is not present!")
+            return redirect("main:student_class", class_slug=class_slug)
     else:
-        return HttpResponse(f"{class_slug} class is not present!")
+        messages.error(request, f"{class_slug} class is not present!")
+        return redirect("main:student_classes")
 
 def student_section(request, class_slug, subject_slug, chapter_slug, section_slug):
     # Add Edit/Delete Section Form?
@@ -264,10 +270,14 @@ def student_section(request, class_slug, subject_slug, chapter_slug, section_slu
                         context={"student_section": matching_section, "class_slug": class_slug, "class_slug_name": class_slug_name, "subject_slug": subject_slug, "subject_slug_name": subject_slug_name, "chapter_slug": chapter_slug, "chapter_slug_name": chapter_slug_name, "section_slug": section_slug, "section_slug_name": section_slug_name}
                         )
                 else:
-                    return HttpResponse(f"{section_slug} section is not present!")
+                    messages.error(request, f"{section_slug} section is not present!")
+                    return redirect("main:student_chapter", class_slug=class_slug, subject_slug=subject_slug, chapter_slug=chapter_slug)
             else:
-                return HttpResponse(f"{chapter_slug} chapter is not present!")
+                messages.error(request, f"{chapter_slug} chapter is not present!")
+                return redirect("main:student_subject", class_slug=class_slug, subject_slug=subject_slug)
         else:
-            return HttpResponse(f"{subject_slug} subject is not present!")
+            messages.error(request, f"{subject_slug} subject is not present!")
+            return redirect("main:student_class", class_slug=class_slug)
     else:
-        return HttpResponse(f"{class_slug} class is not present!")
+        messages.error(request, f"{class_slug} class is not present!")
+        return redirect("main:student_classes")
