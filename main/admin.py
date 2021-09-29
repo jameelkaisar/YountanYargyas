@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile
 from django.db import models
 from tinymce.widgets import TinyMCE
 
@@ -19,3 +19,8 @@ admin.site.register(StudentClass)
 admin.site.register(StudentSubject)
 admin.site.register(StudentChapter)
 admin.site.register(StudentSection, StudentSectionAdmin)
+
+admin.site.register(UploadImage)
+admin.site.register(UploadVideo)
+admin.site.register(UploadAudio)
+admin.site.register(UploadFile)

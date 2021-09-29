@@ -98,3 +98,83 @@ class StudentSection(models.Model):
 
     def __str__(self):
         return self.student_section
+
+class UploadImage(models.Model):
+    def user_directory_path(instance, filename):
+        return f"upload/images/{slugify(instance.image_name)}.{filename.split('.')[-1]}"
+
+    image_name = models.CharField(max_length=100)
+    image_summary = models.CharField(max_length=500)
+
+    image_file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Images"
+
+    def delete(self, *args, **kwargs):
+        if self.image_file:
+            self.image_file.storage.delete(self.image_file.name)
+        super(UploadImage, self).delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.image_name
+
+class UploadVideo(models.Model):
+    def user_directory_path(instance, filename):
+        return f"upload/videos/{slugify(instance.video_name)}.{filename.split('.')[-1]}"
+
+    video_name = models.CharField(max_length=100)
+    video_summary = models.CharField(max_length=500)
+
+    video_file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Videos"
+
+    def delete(self, *args, **kwargs):
+        if self.video_file:
+            self.video_file.storage.delete(self.video_file.name)
+        super(UploadVideo, self).delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.video_name
+
+class UploadAudio(models.Model):
+    def user_directory_path(instance, filename):
+        return f"upload/audios/{slugify(instance.audio_name)}.{filename.split('.')[-1]}"
+
+    audio_name = models.CharField(max_length=100)
+    audio_summary = models.CharField(max_length=500)
+
+    audio_file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Audios"
+
+    def delete(self, *args, **kwargs):
+        if self.audio_file:
+            self.audio_file.storage.delete(self.audio_file.name)
+        super(UploadAudio, self).delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.audio_name
+
+class UploadFile(models.Model):
+    def user_directory_path(instance, filename):
+        return f"upload/files/{slugify(instance.file_name)}.{filename.split('.')[-1]}"
+
+    file_name = models.CharField(max_length=100)
+    file_summary = models.CharField(max_length=500)
+
+    file_file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Files"
+
+    def delete(self, *args, **kwargs):
+        if self.file_file:
+            self.file_file.storage.delete(self.file_file.name)
+        super(UploadFile, self).delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.file_name

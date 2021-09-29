@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile
 from tinymce.widgets import TinyMCE
 
 class MyRegistrationForm(UserCreationForm):
@@ -49,4 +49,32 @@ class AddSection(forms.ModelForm):
         model = StudentSection
         fields = ["student_section", "section_summary", "section_video", "section_text", "student_chapter"]
         labels = {"student_section": "Section Name", "section_summary": "Section Summary", "section_video": "", "section_text": "Section Text", "student_chapter": "Student Chapter (FK)"}
-        widgets = {"section_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "section_video": forms.FileInput(attrs={"style": "display: none;"}), "section_text": TinyMCE(), "student_chapter": forms.HiddenInput()}
+        widgets = {"section_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "section_video": forms.FileInput(attrs={"style": "display: none;", "accept": "video/*"}), "section_text": TinyMCE(), "student_chapter": forms.HiddenInput()}
+
+class AddImage(forms.ModelForm):
+    class Meta:
+        model = UploadImage
+        fields = ["image_name", "image_summary", "image_file"]
+        labels = {"image_name": "Image Name", "image_summary": "Image Summary", "image_file": ""}
+        widgets = {"image_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "image_file": forms.FileInput(attrs={"style": "display: none;", "accept": "image/*"})}
+
+class AddVideo(forms.ModelForm):
+    class Meta:
+        model = UploadVideo
+        fields = ["video_name", "video_summary", "video_file"]
+        labels = {"video_name": "Video Name", "video_summary": "Video Summary", "video_file": ""}
+        widgets = {"video_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "video_file": forms.FileInput(attrs={"style": "display: none;", "accept": "video/*"})}
+
+class AddAudio(forms.ModelForm):
+    class Meta:
+        model = UploadAudio
+        fields = ["audio_name", "audio_summary", "audio_file"]
+        labels = {"audio_name": "Audio Name", "audio_summary": "Audio Summary", "audio_file": ""}
+        widgets = {"audio_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "audio_file": forms.FileInput(attrs={"style": "display: none;", "accept": "audio/*"})}
+
+class AddFile(forms.ModelForm):
+    class Meta:
+        model = UploadFile
+        fields = ["file_name", "file_summary", "file_file"]
+        labels = {"file_name": "File Name", "file_summary": "File Summary", "file_file": ""}
+        widgets = {"file_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "file_file": forms.FileInput(attrs={"style": "display: none;"})}

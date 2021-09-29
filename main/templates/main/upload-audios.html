@@ -1,0 +1,86 @@
+{% extends "main/includes/header.html" %}
+
+{% block content %}
+    <div class="z-depth-1">
+        <ul class="breadcrumbs">
+            <li><a href="/">Home</a></li>
+            <li>Upload</li>
+            <li><b>Audios</b></li>
+        </ul>
+    </div>
+
+    <div class="row grey lighten-5 z-depth-1" align="center">
+        <a href="/upload/images" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="col m3 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>Images</b></div>
+        </a>
+        <a href="/upload/videos" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="col m3 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>Videos</b></div>
+        </a>
+        <div class="col m3 upload-bar" style="padding-top: 15px; padding-bottom: 15px; background-color: #dadada;"><b>Audios</b></div>
+        <a href="/upload/files" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="col m3 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>Files</b></div>
+        </a>
+    </div>
+
+    {% if  user.is_superuser %}
+        <ul class="collapsible">
+            <li>
+                <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Upload Audio</big></div>
+                <div class="collapsible-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <p><label style="margin-right: 25px;">Audio:</label><label for="id_audio_file" class="btn">Choose Audio</label></p>
+                        <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Upload Audio</button></p>
+                    </form>
+                </div>
+            </li>
+        </ul>
+    {% else %}
+        {% for group in user.groups.all %}
+            {%  if 'teacher' == group.name %}
+                <ul class="collapsible">
+                    <li>
+                        <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Upload Audio</big></div>
+                        <div class="collapsible-body">
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <p><label style="margin-right: 25px;">Audio:</label><label for="id_audio_file" class="btn">Choose Audio</label></p>
+                                <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Upload Audio</button></p>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    {% for audio in upload_audio %}
+        <a href="{{ audio.audio_file.url }}" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="card card-panel grey lighten-5 z-depth-1">
+                <span class="card-title"><b>{{ audio.audio_name }}</b></span>
+                <p>{{ audio.audio_summary|linebreaks }}</p>
+                {% if  user.is_superuser %}
+                    <div align="right">
+                        <a href="#" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
+                        <a href="#" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
+                    </div>
+                {% else %}
+                    {% for group in user.groups.all %}
+                        {%  if 'teacher' == group.name %}
+                            <div align="right">
+                                <a href="#" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
+                                <a href="#" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </a>
+    {% empty %}
+        <div class="card card-panel grey lighten-5 z-depth-1" align="center">
+            <span class="card-title"><b>This section is empty!</b></span>
+        </div>
+    {% endfor %}
+{% endblock %}

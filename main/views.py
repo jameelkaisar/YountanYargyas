@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile
 from django.http import HttpResponse
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib import messages
-from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection
+from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddImage, AddVideo, AddAudio, AddFile
 
 # Create your views here.
 
@@ -116,6 +116,101 @@ def profile(request):
         return render(
             request=request,
             template_name="main/profile.html"
+            )
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect("main:login_request")
+
+def upload(request):
+    if request.user.is_authenticated:
+        return redirect("main:upload_images")
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect("main:login_request")
+
+def upload_images(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            form = AddImage(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                messages.info(request, "Image Uploaded Successfully!")
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, error)
+
+        form = AddImage()
+        return render(
+            request=request,
+            template_name="main/upload-images.html",
+            context={"upload_image": UploadImage.objects.all, "form": form}
+            )
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect("main:login_request")
+
+def upload_videos(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            form = AddVideo(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                messages.info(request, "Video Uploaded Successfully!")
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, error)
+
+        form = AddVideo()
+        return render(
+            request=request,
+            template_name="main/upload-videos.html",
+            context={"upload_video": UploadVideo.objects.all, "form": form}
+            )
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect("main:login_request")
+
+def upload_audios(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            form = AddAudio(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                messages.info(request, "Audio Uploaded Successfully!")
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, error)
+
+        form = AddAudio()
+        return render(
+            request=request,
+            template_name="main/upload-audios.html",
+            context={"upload_audio": UploadAudio.objects.all, "form": form}
+            )
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect("main:login_request")
+
+def upload_files(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            form = AddFile(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                messages.info(request, "File Uploaded Successfully!")
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, error)
+
+        form = AddFile()
+        return render(
+            request=request,
+            template_name="main/upload-files.html",
+            context={"upload_file": UploadFile.objects.all, "form": form}
             )
     else:
         messages.error(request, "You must be logged in to view this page!")
