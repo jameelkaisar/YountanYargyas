@@ -113,6 +113,13 @@ TINYMCE_DEFAULT_CONFIG = {
     "plugins": "advlist autolink lists link image charmap print preview anchor searchreplace visualblocks codesample code fullscreen insertdatetime media table paste code help wordcount spellchecker",
     "toolbar": "fullscreen preview save print | undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | insertfile image media pageembed template link codesample anchor | a11ycheck ltr rtl | showcomments addcomment code",
     "custom_undo_redo_levels": 10,
+
+    # Disable Relative URLs
+    "relative_urls": False,
+    "remove_script_host": True,
+    "document_base_url": "/",
+
+    # Custom codesample Languages
     # "codesample_languages": [{"text": "HTML/XML", "value": "markup"},
     #                          {"text": "JavaScript", "value": "javascript"},
     #                          {"text": "CSS", "value": "css"},

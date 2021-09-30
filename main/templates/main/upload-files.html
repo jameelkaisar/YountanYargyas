@@ -1,4 +1,5 @@
 {% extends "main/includes/header.html" %}
+{% load static %}
 
 {% block content %}
     <div class="z-depth-1">
@@ -11,15 +12,15 @@
 
     <div class="row grey lighten-5 z-depth-1" align="center">
         <a href="/upload/images" style="display: block; color: inherit; text-decoration: inherit;">
-            <div class="col m3 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>Images</b></div>
+            <div class="col s3 m3 l3 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>Images</b></div>
         </a>
         <a href="/upload/videos" style="display: block; color: inherit; text-decoration: inherit;">
-            <div class="col m3 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>Videos</b></div>
+            <div class="col s3 m3 l3 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>Videos</b></div>
         </a>
         <a href="/upload/audios" style="display: block; color: inherit; text-decoration: inherit;">
-            <div class="col m3 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>Audios</b></div>
+            <div class="col s3 m3 l3 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>Audios</b></div>
         </a>
-        <div class="col m3 upload-bar" style="padding-top: 15px; padding-bottom: 15px; background-color: #dadada;"><b>Files</b></div>
+        <div class="col s3 m3 l3 upload-bar" style="padding-top: 15px; padding-bottom: 15px; background-color: #dadada;"><b>Files</b></div>
     </div>
 
     {% if  user.is_superuser %}
@@ -56,31 +57,64 @@
         {% endfor %}
     {% endif %}
 
-    {% for file in upload_file %}
-        <a href="{{ file.file_file.url }}" style="display: block; color: inherit; text-decoration: inherit;">
-            <div class="card card-panel grey lighten-5 z-depth-1">
-                <span class="card-title"><b>{{ file.file_name }}</b></span>
-                <p>{{ file.file_summary|linebreaks }}</p>
-                {% if  user.is_superuser %}
-                    <div align="right">
-                        <a href="#" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
-                        <a href="#" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
+    <div class="row">
+        {% for file in upload_file %}
+            <div class="col s12 m6 l4">
+                <div class="card">
+                    <div class="card-image" style="position: relative; width: 100%; padding-top: 56.25%">
+                        <img src="{% static 'main/images/upload-files.png' %}" style="position: absolute; object-fit: cover; max-width: 100%; max-height: 100%; magrin: 0 auto;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0px -70px 100px -10px #000000;"></div>
+                        <span class="card-title"><b>{{ file.file_name }}</b></span>
+                        <a href="#modal{{ forloop.counter }}" class="btn-floating halfway-fab waves-effect waves-light red modal-trigger"><i class="material-icons">info_outline</i></a>
                     </div>
-                {% else %}
-                    {% for group in user.groups.all %}
-                        {%  if 'teacher' == group.name %}
-                            <div align="right">
-                                <a href="#" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
-                                <a href="#" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
+                    <div class="card-content">
+                        <p style="display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; height: 1.5em; line-height: 1.5;">{{ file.file_summary }}</p>
+                    </div>
+                    <div class="card-action" align="center">
+                        <input type="text" value="{{ file.file_file.url }}" disabled>
+                        <a id="copy-button-{{ forloop.counter }}" class="btn tooltipped" data-position="bottom" data-tooltip="Click to Copy!" onclick="copyToClipboard('{{ file.file_file.url }}', '{{ forloop.counter }}')">Copy Link</a>
+                        <a href="{{ file.file_file.url }}" class="btn tooltipped" data-position="bottom" data-tooltip="Click to Download!" download>Download</a>
+                    </div>
+                </div>
             </div>
-        </a>
-    {% empty %}
-        <div class="card card-panel grey lighten-5 z-depth-1" align="center">
-            <span class="card-title"><b>This section is empty!</b></span>
-        </div>
-    {% endfor %}
+            <div id="modal{{ forloop.counter }}" class="modal">
+                <div class="modal-content">
+                    <h4>{{ file.file_name }}</h4>
+                    <p>{{ file.file_summary|linebreaks }}</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="card card-panel grey lighten-5 z-depth-1" align="center">
+                <span class="card-title"><b>This section is empty!</b></span>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function copyToClipboard(textToCopy, idToChange) {
+            document.querySelectorAll(".material-tooltip .tooltip-content")[idToChange-1].innerHTML = "Copied!";
+            // document.getElementById("copy-button-"+idToChange).setAttribute("data-tooltip", "Copied!");
+            // navigator clipboard api needs a secure context (https)
+            if (navigator.clipboard && window.isSecureContext) {
+                // navigator clipboard api method'
+                return navigator.clipboard.writeText(textToCopy);
+            } else {
+                // text area method
+                let textArea = document.createElement("textarea");
+                textArea.value = textToCopy;
+                // make the textarea out of viewport
+                textArea.style.position = "absolute";
+                textArea.style.opacity = 0;
+                document.body.appendChild(textArea);
+                textArea.select();
+                return new Promise((res, rej) => {
+                    document.execCommand('copy') ? res() : rej();
+                    textArea.remove();
+                });
+            }
+        }
+    </script>
 {% endblock %}
