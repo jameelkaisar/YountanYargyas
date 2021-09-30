@@ -1,4 +1,5 @@
 {% extends "main/includes/header.html" %}
+{% load static %}
 
 {% block content %}
     <div class="z-depth-1">
@@ -74,6 +75,21 @@
                         <a id="copy-button-{{ forloop.counter }}" class="btn tooltipped" data-position="bottom" data-tooltip="Click to Copy!" onclick="copyToClipboard('{{ image.image_file.url }}', '{{ forloop.counter }}')">Copy Link</a>
                         <a href="{{ image.image_file.url }}" class="btn tooltipped" data-position="bottom" data-tooltip="Click to Download!" download>Download</a>
                     </div>
+                    {% if  user.is_superuser %}
+                        <div class="card-action" align="center">
+                            <a href="#!" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
+                            <a href="#!" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
+                        </div>
+                    {% else %}
+                        {% for group in user.groups.all %}
+                            {%  if 'teacher' == group.name %}
+                                <div class="card-action" align="center">
+                                    <a href="#!" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
+                                    <a href="#!" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             <div id="modal{{ forloop.counter }}" class="modal">
@@ -94,7 +110,7 @@
 
     <script>
         function copyToClipboard(textToCopy, idToChange) {
-            document.querySelectorAll(".material-tooltip .tooltip-content")[idToChange-1].innerHTML = "Copied!";
+            document.querySelectorAll(".material-tooltip .tooltip-content")[2*idToChange-2].innerHTML = "Copied!";
             // document.getElementById("copy-button-"+idToChange).setAttribute("data-tooltip", "Copied!");
             // navigator clipboard api needs a secure context (https)
             if (navigator.clipboard && window.isSecureContext) {

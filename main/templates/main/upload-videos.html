@@ -61,13 +61,17 @@
         {% for video in upload_video %}
             <div class="col s12 m6 l4">
                 <div class="card">
-                    <div class="card-image" style="position: relative; width: 100%; padding-top: 56.25%">
-                        <img src="{% static 'main/images/upload-files.png' %}" style="position: absolute; object-fit: cover; max-width: 100%; max-height: 100%; magrin: 0 auto;">
-                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0px -70px 100px -10px #000000;"></div>
-                        <span class="card-title"><b>{{ video.video_name }}</b></span>
+                    <div class="card-image" style="width: 100%; background-color: black;" align="center">
+                        <video class="responsive-video section" style=" max-width: 100%; max-height: 100%;" controls>
+                            <source src="{{ video.video_file.url }}" type='video/mp4'>
+                            <div style="padding: 10px;">
+                                <span class="white-text">Your browser does not support the video tag.</span>
+                            </div>
+                        </video>
                         <a href="#modal{{ forloop.counter }}" class="btn-floating halfway-fab waves-effect waves-light red modal-trigger"><i class="material-icons">info_outline</i></a>
                     </div>
                     <div class="card-content">
+                        <span class="card-title"><b>{{ video.video_name }}</b></span>
                         <p style="display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; height: 1.5em; line-height: 1.5;">{{ video.video_summary }}</p>
                     </div>
                     <div class="card-action" align="center">
@@ -75,6 +79,21 @@
                         <a id="copy-button-{{ forloop.counter }}" class="btn tooltipped" data-position="bottom" data-tooltip="Click to Copy!" onclick="copyToClipboard('{{ video.video_file.url }}', '{{ forloop.counter }}')">Copy Link</a>
                         <a href="{{ video.video_file.url }}" class="btn tooltipped" data-position="bottom" data-tooltip="Click to Download!" download>Download</a>
                     </div>
+                    {% if  user.is_superuser %}
+                        <div class="card-action" align="center">
+                            <a href="#!" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
+                            <a href="#!" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
+                        </div>
+                    {% else %}
+                        {% for group in user.groups.all %}
+                            {%  if 'teacher' == group.name %}
+                                <div class="card-action" align="center">
+                                    <a href="#!" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
+                                    <a href="#!" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             <div id="modal{{ forloop.counter }}" class="modal">
@@ -95,7 +114,7 @@
 
     <script>
         function copyToClipboard(textToCopy, idToChange) {
-            document.querySelectorAll(".material-tooltip .tooltip-content")[idToChange-1].innerHTML = "Copied!";
+            document.querySelectorAll(".material-tooltip .tooltip-content")[2*idToChange-2].innerHTML = "Copied!";
             // document.getElementById("copy-button-"+idToChange).setAttribute("data-tooltip", "Copied!");
             // navigator clipboard api needs a secure context (https)
             if (navigator.clipboard && window.isSecureContext) {
