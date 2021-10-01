@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib import messages
 from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddImage, AddVideo, AddAudio, AddFile
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -141,10 +142,14 @@ def upload_images(request):
                         messages.error(request, error)
 
         form = AddImage()
+        upload_image = list(reversed(UploadImage.objects.all()))
+        page_upload_image = Paginator(upload_image, 6)
+        page_number = request.GET.get('page')
+        page_obj = page_upload_image.get_page(page_number)
         return render(
             request=request,
             template_name="main/upload-images.html",
-            context={"upload_image": UploadImage.objects.all, "form": form}
+            context={"page_obj": page_obj, "form": form}
             )
     else:
         messages.error(request, "You must be logged in to view this page!")
@@ -163,10 +168,14 @@ def upload_videos(request):
                         messages.error(request, error)
 
         form = AddVideo()
+        upload_video = list(reversed(UploadVideo.objects.all()))
+        page_upload_video = Paginator(upload_video, 6)
+        page_number = request.GET.get('page')
+        page_obj = page_upload_video.get_page(page_number)
         return render(
             request=request,
             template_name="main/upload-videos.html",
-            context={"upload_video": UploadVideo.objects.all, "form": form}
+            context={"page_obj": page_obj, "form": form}
             )
     else:
         messages.error(request, "You must be logged in to view this page!")
@@ -185,10 +194,14 @@ def upload_audios(request):
                         messages.error(request, error)
 
         form = AddAudio()
+        upload_audio = list(reversed(UploadAudio.objects.all()))
+        page_upload_audio = Paginator(upload_audio, 6)
+        page_number = request.GET.get('page')
+        page_obj = page_upload_audio.get_page(page_number)
         return render(
             request=request,
             template_name="main/upload-audios.html",
-            context={"upload_audio": UploadAudio.objects.all, "form": form}
+            context={"page_obj": page_obj, "form": form}
             )
     else:
         messages.error(request, "You must be logged in to view this page!")
@@ -207,10 +220,14 @@ def upload_files(request):
                         messages.error(request, error)
 
         form = AddFile()
+        upload_file = list(reversed(UploadFile.objects.all()))
+        page_upload_file = Paginator(upload_file, 6)
+        page_number = request.GET.get('page')
+        page_obj = page_upload_file.get_page(page_number)
         return render(
             request=request,
             template_name="main/upload-files.html",
-            context={"upload_file": UploadFile.objects.all, "form": form}
+            context={"page_obj": page_obj, "form": form}
             )
     else:
         messages.error(request, "You must be logged in to view this page!")
