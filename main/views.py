@@ -3,39 +3,53 @@ from .models import StudentClass, StudentSubject, StudentChapter, StudentSection
 from django.http import HttpResponse
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib import messages
-from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddImage, AddVideo, AddAudio, AddFile
+from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddImage, AddVideo, AddAudio, AddFile, EditClass, EditSubject, EditChapter, EditSection, EditImage, EditVideo, EditAudio, EditFile
 from django.core.paginator import Paginator
+from django.utils.text import slugify
 
 # Create your views here.
+
+def is_editor(user):
+    if user.is_authenticated:
+        if user.is_superuser or "teacher" in [g.name for g in user.groups.all()]:
+            return True
+    return False
 
 def homepage(request):
     return render(
         request=request,
-        template_name="main/home.html"
+        template_name="main/home.html",
+        context={"title": "Home"}
         )
 
 def aboutpage(request):
     return render(
         request=request,
-        template_name="main/about.html"
+        template_name="main/about.html",
+        context={"title": "About"}
         )
 
 def contactpage(request):
     return render(
         request=request,
-        template_name="main/contact.html"
+        template_name="main/contact.html",
+        context={"title": "Contact"}
         )
 
 def helppage(request):
     return render(
         request=request,
-        template_name="main/help.html"
+        template_name="main/help.html",
+        context={"title": "Help"}
         )
 
 def register(request):
     if request.user.is_authenticated:
-        messages.info(request, "You are already logged in!")
-        return redirect("main:homepage")
+        if request.GET.get('next'):
+            return redirect(request.GET.get('next'))
+        else:
+            messages.info(request, "You are already logged in!")
+            return redirect("main:homepage")
     else:
         if request.method == "POST":
             form = MyRegistrationForm(request.POST)
@@ -58,12 +72,15 @@ def register(request):
         return render(
             request=request,
             template_name="main/register.html",
-            context={"form": form, "next": request.GET.get('next')})
+            context={"title": "Register", "form": form, "next": request.GET.get('next')})
 
 def login_request(request):
     if request.user.is_authenticated:
-        messages.info(request, "You are already logged in!")
-        return redirect("main:homepage")
+        if request.GET.get('next'):
+            return redirect(request.GET.get('next'))
+        else:
+            messages.info(request, "You are already logged in!")
+            return redirect("main:homepage")
     else:
         if request.method == "POST":
             form = MyLoginForm(request, request.POST)
@@ -87,7 +104,7 @@ def login_request(request):
         return render(
             request=request,
             template_name="main/login.html",
-            context={"form": form, "next": request.GET.get('next')})
+            context={"title": "Login", "form": form, "next": request.GET.get('next')})
 
 def change_password(request):
     if request.user.is_authenticated:
@@ -107,7 +124,7 @@ def change_password(request):
         return render(
             request=request,
             template_name="main/change_password.html",
-            context={"form": form})
+            context={"title": "Change Password", "form": form})
     else:
         messages.error(request, "You must be logged in to view this page!")
         return redirect(f"/login?next={request.get_full_path()}")
@@ -116,13 +133,17 @@ def logout_request(request):
     if request.user.is_authenticated:
         logout(request)
         messages.info(request, "Logged out successfully!")
-    return redirect("main:homepage")
+    if request.GET.get('next'):
+        return redirect(request.GET.get('next'))
+    else:
+        return redirect("main:homepage")
 
 def profile(request):
     if request.user.is_authenticated:
         return render(
             request=request,
-            template_name="main/profile.html"
+            template_name="main/profile.html",
+            context={"title": "Profile"}
             )
     else:
         messages.error(request, "You must be logged in to view this page!")
@@ -155,7 +176,7 @@ def upload_images(request):
         return render(
             request=request,
             template_name="main/upload-images.html",
-            context={"page_obj": page_obj, "form": form}
+            context={"title": "Images", "editor": is_editor(request.user), "page_obj": page_obj, "form": form, "next": request.get_full_path()}
             )
     else:
         messages.error(request, "You must be logged in to view this page!")
@@ -181,7 +202,7 @@ def upload_videos(request):
         return render(
             request=request,
             template_name="main/upload-videos.html",
-            context={"page_obj": page_obj, "form": form}
+            context={"title": "Videos", "editor": is_editor(request.user), "page_obj": page_obj, "form": form, "next": request.get_full_path()}
             )
     else:
         messages.error(request, "You must be logged in to view this page!")
@@ -207,7 +228,7 @@ def upload_audios(request):
         return render(
             request=request,
             template_name="main/upload-audios.html",
-            context={"page_obj": page_obj, "form": form}
+            context={"title": "Audios", "editor": is_editor(request.user), "page_obj": page_obj, "form": form, "next": request.get_full_path()}
             )
     else:
         messages.error(request, "You must be logged in to view this page!")
@@ -233,7 +254,7 @@ def upload_files(request):
         return render(
             request=request,
             template_name="main/upload-files.html",
-            context={"page_obj": page_obj, "form": form}
+            context={"title": "Files", "editor": is_editor(request.user), "page_obj": page_obj, "form": form, "next": request.get_full_path()}
             )
     else:
         messages.error(request, "You must be logged in to view this page!")
@@ -255,7 +276,7 @@ def student_classes(request):
     return render(
         request=request,
         template_name="main/classes.html",
-        context={"student_classes": StudentClass.objects.all, "form": form}
+        context={"title": "Classes", "editor": is_editor(request.user), "student_classes": StudentClass.objects.all, "form": form, "next": request.get_full_path()}
         )
 
 def student_class(request, class_slug):
@@ -279,7 +300,7 @@ def student_class(request, class_slug):
         return render(
             request=request,
             template_name="main/subjects.html",
-            context={"student_subjects": matching_subjects, "class_slug": class_slug, "class_slug_name": class_slug_name, "form": form}
+            context={"title": class_slug_name, "editor": is_editor(request.user), "student_subjects": matching_subjects, "class_slug": class_slug, "class_slug_name": class_slug_name, "form": form, "next": request.get_full_path()}
             )
     else:
         messages.error(request, f"{class_slug} class is not present!")
@@ -310,7 +331,7 @@ def student_subject(request, class_slug, subject_slug):
             return render(
                 request=request,
                 template_name="main/chapters.html",
-                context={"student_chapters": matching_chapters, "class_slug": class_slug, "class_slug_name": class_slug_name, "subject_slug": subject_slug, "subject_slug_name": subject_slug_name, "form": form}
+                context={"title": subject_slug_name, "editor": is_editor(request.user), "student_chapters": matching_chapters, "class_slug": class_slug, "class_slug_name": class_slug_name, "subject_slug": subject_slug, "subject_slug_name": subject_slug_name, "form": form, "next": request.get_full_path()}
                 )
         else:
             messages.error(request, f"{subject_slug} subject is not present!")
@@ -352,7 +373,7 @@ def student_chapter(request, class_slug, subject_slug, chapter_slug):
                 return render(
                     request=request,
                     template_name="main/sections.html",
-                    context={"student_sections": matching_sections, "class_slug": class_slug, "class_slug_name": class_slug_name, "subject_slug": subject_slug, "subject_slug_name": subject_slug_name, "chapter_slug": chapter_slug, "chapter_slug_name": chapter_slug_name, "form": form}
+                    context={"title": chapter_slug_name, "editor": is_editor(request.user), "student_sections": matching_sections, "class_slug": class_slug, "class_slug_name": class_slug_name, "subject_slug": subject_slug, "subject_slug_name": subject_slug_name, "chapter_slug": chapter_slug, "chapter_slug_name": chapter_slug_name, "form": form, "next": request.get_full_path()}
                     )
             else:
                 messages.error(request, f"{chapter_slug} chapter is not present!")
@@ -385,7 +406,7 @@ def student_section(request, class_slug, subject_slug, chapter_slug, section_slu
                     return render(
                         request=request,
                         template_name="main/content.html",
-                        context={"student_section": matching_section, "class_slug": class_slug, "class_slug_name": class_slug_name, "subject_slug": subject_slug, "subject_slug_name": subject_slug_name, "chapter_slug": chapter_slug, "chapter_slug_name": chapter_slug_name, "section_slug": section_slug, "section_slug_name": section_slug_name}
+                        context={"title": section_slug_name, "editor": is_editor(request.user), "student_section": matching_section, "class_slug": class_slug, "class_slug_name": class_slug_name, "subject_slug": subject_slug, "subject_slug_name": subject_slug_name, "chapter_slug": chapter_slug, "chapter_slug_name": chapter_slug_name, "section_slug": section_slug, "section_slug_name": section_slug_name, "next": request.get_full_path()}
                         )
                 else:
                     messages.error(request, f"{section_slug} section is not present!")
@@ -399,3 +420,448 @@ def student_section(request, class_slug, subject_slug, chapter_slug, section_slu
     else:
         messages.error(request, f"{class_slug} class is not present!")
         return redirect("main:student_classes")
+
+def delete_data(request):
+    if request.user.is_authenticated and is_editor(request.user):
+        if request.method == "POST":
+            if request.POST.get('data_type') == "content":
+                try:
+                    instance = StudentSection.objects.get(id=request.POST.get('data_id'))
+                    instance.delete()
+                    messages.info(request, "Section Deleted Successfully!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next').rsplit('/', 1)[0])
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "section":
+                try:
+                    instance = StudentSection.objects.get(id=request.POST.get('data_id'))
+                    instance.delete()
+                    messages.info(request, "Section Deleted Successfully!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "chapter":
+                try:
+                    if StudentSection.objects.filter(student_chapter=request.POST.get('data_id')).count():
+                        messages.error(request, "Non-empty Chapters can't be Deleted!")
+                    else:
+                        instance = StudentChapter.objects.get(id=request.POST.get('data_id'))
+                        instance.delete()
+                        messages.info(request, "Chapter Deleted Successfully!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "subject":
+                try:
+                    if StudentChapter.objects.filter(student_subject=request.POST.get('data_id')).count():
+                        messages.error(request, "Non-empty Subjects can't be Deleted!")
+                    else:
+                        instance = StudentSubject.objects.get(id=request.POST.get('data_id'))
+                        instance.delete()
+                        messages.info(request, "Subject Deleted Successfully!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "class":
+                try:
+                    if StudentSubject.objects.filter(student_class=request.POST.get('data_id')).count():
+                        messages.error(request, "Non-empty Classes can't be Deleted!")
+                    else:
+                        instance = StudentClass.objects.get(id=request.POST.get('data_id'))
+                        instance.delete()
+                        messages.info(request, "Class Deleted Successfully!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "image":
+                try:
+                    instance = UploadImage.objects.get(id=request.POST.get('data_id'))
+                    instance.delete()
+                    messages.info(request, "Image Deleted Successfully!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "video":
+                try:
+                    instance = UploadVideo.objects.get(id=request.POST.get('data_id'))
+                    instance.delete()
+                    messages.info(request, "Video Deleted Successfully!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "audio":
+                try:
+                    instance = UploadAudio.objects.get(id=request.POST.get('data_id'))
+                    instance.delete()
+                    messages.info(request, "Audio Deleted Successfully!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "file":
+                try:
+                    instance = UploadFile.objects.get(id=request.POST.get('data_id'))
+                    instance.delete()
+                    messages.info(request, "File Deleted Successfully!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            else:
+                return redirect("main:homepage")
+        else:
+            return redirect("main:homepage")
+    else:
+        return redirect("main:homepage")
+
+def edit_data(request):
+    if request.user.is_authenticated and is_editor(request.user):
+        if request.method == "POST":
+            if request.POST.get('data_type') == "content":
+                try:
+                    instance = StudentSection.objects.get(id=request.POST.get('data_id'))
+                    form = EditSection(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "student_section": instance.student_section, "section_summary": instance.section_summary, "section_text": instance.section_text})
+                    return render(
+                        request=request,
+                        template_name="main/edit-data.html",
+                        context={"title": "Edit Section", "form": form}
+                        )
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-content":
+                try:
+                    instance = StudentSection.objects.get(id=request.POST.get('data_id'))
+                    instance.student_section = request.POST.get('student_section')
+                    instance.section_summary = request.POST.get('section_summary')
+                    instance.section_text = request.POST.get('section_text')
+                    # No need to change the video name
+                    if instance.section_slug == slugify(instance.student_section):
+                        try:
+                            instance.save()
+                            messages.info(request, "Section Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the section!")
+                    else:
+                        current_sections = StudentSection.objects.filter(student_chapter=instance.student_chapter)
+                        for current_section in current_sections:
+                            if current_section.section_slug == slugify(instance.student_section):
+                                messages.error(request, f'Section with name \"{instance.student_section}\" already exists.')
+                                break
+                        else:
+                            instance.section_slug = slugify(instance.student_section)
+                            try:
+                                instance.save()
+                                messages.info(request, "Section Edited Successfully!")
+                            except:
+                                messages.error(request, "Error while saving the section!")
+                    if request.POST.get('data_next'):
+                        return redirect(f"{request.POST.get('data_next').rsplit('/', 1)[0]}/{instance.section_slug}")
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "section":
+                try:
+                    instance = StudentSection.objects.get(id=request.POST.get('data_id'))
+                    form = EditSection(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "student_section": instance.student_section, "section_summary": instance.section_summary, "section_text": instance.section_text})
+                    return render(
+                        request=request,
+                        template_name="main/edit-data.html",
+                        context={"title": "Edit Section", "form": form}
+                        )
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-section":
+                try:
+                    instance = StudentSection.objects.get(id=request.POST.get('data_id'))
+                    instance.student_section = request.POST.get('student_section')
+                    instance.section_summary = request.POST.get('section_summary')
+                    instance.section_text = request.POST.get('section_text')
+                    # No need to change the video name
+                    if instance.section_slug == slugify(instance.student_section):
+                        try:
+                            instance.save()
+                            messages.info(request, "Section Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the section!")
+                    else:
+                        current_sections = StudentSection.objects.filter(student_chapter=instance.student_chapter)
+                        for current_section in current_sections:
+                            if current_section.section_slug == slugify(instance.student_section):
+                                messages.error(request, f'Section with name \"{instance.student_section}\" already exists.')
+                                break
+                        else:
+                            instance.section_slug = slugify(instance.student_section)
+                            try:
+                                instance.save()
+                                messages.info(request, "Section Edited Successfully!")
+                            except:
+                                messages.error(request, "Error while saving the section!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "chapter":
+                try:
+                    instance = StudentChapter.objects.get(id=request.POST.get('data_id'))
+                    form = EditChapter(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "student_chapter": instance.student_chapter, "chapter_summary": instance.chapter_summary})
+                    return render(
+                        request=request,
+                        template_name="main/edit-data.html",
+                        context={"title": "Edit Chapter", "form": form}
+                        )
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-chapter":
+                try:
+                    instance = StudentChapter.objects.get(id=request.POST.get('data_id'))
+                    instance.student_chapter = request.POST.get('student_chapter')
+                    instance.chapter_summary = request.POST.get('chapter_summary')
+                    if instance.chapter_slug == slugify(instance.student_chapter):
+                        try:
+                            instance.save()
+                            messages.info(request, "Chapter Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the chapter!")
+                    else:
+                        current_chapters = StudentChapter.objects.filter(student_subject=instance.student_subject)
+                        for current_chapter in current_chapters:
+                            if current_chapter.chapter_slug == slugify(instance.student_chapter):
+                                messages.error(request, f'Chapter with name \"{instance.student_chapter}\" already exists.')
+                                break
+                        else:
+                            instance.chapter_slug = slugify(instance.student_chapter)
+                            try:
+                                instance.save()
+                                messages.info(request, "Chapter Edited Successfully!")
+                            except:
+                                messages.error(request, "Error while saving the chapter!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "subject":
+                try:
+                    instance = StudentSubject.objects.get(id=request.POST.get('data_id'))
+                    form = EditSubject(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "student_subject": instance.student_subject, "subject_summary": instance.subject_summary})
+                    return render(
+                        request=request,
+                        template_name="main/edit-data.html",
+                        context={"title": "Edit Subject", "form": form}
+                        )
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-subject":
+                try:
+                    instance = StudentSubject.objects.get(id=request.POST.get('data_id'))
+                    instance.student_subject = request.POST.get('student_subject')
+                    instance.subject_summary = request.POST.get('subject_summary')
+                    if instance.subject_slug == slugify(instance.student_subject):
+                        try:
+                            instance.save()
+                            messages.info(request, "Subject Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the subject!")
+                    else:
+                        current_subjects = StudentSubject.objects.filter(student_class=instance.student_class)
+                        for current_subject in current_subjects:
+                            if current_subject.subject_slug == slugify(instance.student_subject):
+                                messages.error(request, f'Subject with name \"{instance.student_subject}\" already exists.')
+                                break
+                        else:
+                            instance.subject_slug = slugify(instance.student_subject)
+                            try:
+                                instance.save()
+                                messages.info(request, "Subject Edited Successfully!")
+                            except:
+                                messages.error(request, "Error while saving the subject!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "class":
+                try:
+                    instance = StudentClass.objects.get(id=request.POST.get('data_id'))
+                    form = EditClass(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "student_class": instance.student_class, "class_summary": instance.class_summary})
+                    return render(
+                        request=request,
+                        template_name="main/edit-data.html",
+                        context={"title": "Edit Class", "form": form}
+                        )
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-class":
+                try:
+                    instance = StudentClass.objects.get(id=request.POST.get('data_id'))
+                    instance.student_class = request.POST.get('student_class')
+                    instance.class_summary = request.POST.get('class_summary')
+                    if instance.class_slug == slugify(instance.student_class):
+                        try:
+                            instance.save()
+                            messages.info(request, "Class Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the class!")
+                    else:
+                        current_classes = StudentClass.objects.all()
+                        for current_class in current_classes:
+                            if current_class.class_slug == slugify(instance.student_class):
+                                messages.error(request, f'Class with name \"{instance.student_class}\" already exists.')
+                                break
+                        else:
+                            instance.class_slug = slugify(instance.student_class)
+                            try:
+                                instance.save()
+                                messages.info(request, "Class Edited Successfully!")
+                            except:
+                                messages.error(request, "Error while saving the class!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "image":
+                try:
+                    instance = UploadImage.objects.get(id=request.POST.get('data_id'))
+                    form = EditImage(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "image_name": instance.image_name, "image_summary": instance.image_summary})
+                    return render(
+                        request=request,
+                        template_name="main/edit-data.html",
+                        context={"title": "Edit Image", "form": form}
+                        )
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-image":
+                try:
+                    instance = UploadImage.objects.get(id=request.POST.get('data_id'))
+                    instance.image_name = request.POST.get('image_name')
+                    instance.image_summary = request.POST.get('image_summary')
+                    try:
+                        instance.save()
+                        messages.info(request, "Image Edited Successfully!")
+                    except:
+                        messages.error(request, "Error while saving the image!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "video":
+                try:
+                    instance = UploadVideo.objects.get(id=request.POST.get('data_id'))
+                    form = EditVideo(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "video_name": instance.video_name, "video_summary": instance.video_summary})
+                    return render(
+                        request=request,
+                        template_name="main/edit-data.html",
+                        context={"title": "Edit Video", "form": form}
+                        )
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-video":
+                try:
+                    instance = UploadVideo.objects.get(id=request.POST.get('data_id'))
+                    instance.video_name = request.POST.get('video_name')
+                    instance.video_summary = request.POST.get('video_summary')
+                    try:
+                        instance.save()
+                        messages.info(request, "Video Edited Successfully!")
+                    except:
+                        messages.error(request, "Error while saving the video!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "audio":
+                try:
+                    instance = UploadAudio.objects.get(id=request.POST.get('data_id'))
+                    form = EditAudio(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "audio_name": instance.audio_name, "audio_summary": instance.audio_summary})
+                    return render(
+                        request=request,
+                        template_name="main/edit-data.html",
+                        context={"title": "Edit Audio", "form": form}
+                        )
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-audio":
+                try:
+                    instance = UploadAudio.objects.get(id=request.POST.get('data_id'))
+                    instance.audio_name = request.POST.get('audio_name')
+                    instance.audio_summary = request.POST.get('audio_summary')
+                    try:
+                        instance.save()
+                        messages.info(request, "Audio Edited Successfully!")
+                    except:
+                        messages.error(request, "Error while saving the audio!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "file":
+                try:
+                    instance = UploadFile.objects.get(id=request.POST.get('data_id'))
+                    form = EditFile(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "file_name": instance.file_name, "file_summary": instance.file_summary})
+                    return render(
+                        request=request,
+                        template_name="main/edit-data.html",
+                        context={"title": "Edit File", "form": form}
+                        )
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-file":
+                try:
+                    instance = UploadFile.objects.get(id=request.POST.get('data_id'))
+                    instance.file_name = request.POST.get('file_name')
+                    instance.file_summary = request.POST.get('file_summary')
+                    try:
+                        instance.save()
+                        messages.info(request, "File Edited Successfully!")
+                    except:
+                        messages.error(request, "Error while saving the file!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            else:
+                return redirect("main:homepage")
+        else:
+            return redirect("main:homepage")
+    else:
+        return redirect("main:homepage")

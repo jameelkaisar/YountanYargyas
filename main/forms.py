@@ -78,3 +78,60 @@ class AddFile(forms.ModelForm):
         fields = ["file_name", "file_summary", "file_file"]
         labels = {"file_name": "File Name", "file_summary": "File Summary", "file_file": ""}
         widgets = {"file_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "file_file": forms.FileInput(attrs={"style": "display: none;"})}
+
+class EditClass(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    student_class = forms.CharField(label="Class Name", max_length=100)
+    class_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Class Summary")
+
+class EditSubject(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    student_subject = forms.CharField(label="Subject Name", max_length=100)
+    subject_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Subject Summary")
+
+class EditChapter(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    student_chapter = forms.CharField(label="Chapter Name", max_length=100)
+    chapter_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Chapter Summary")
+
+class EditSection(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    student_section = forms.CharField(label="Section Name", max_length=100)
+    section_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Section Summary")
+    section_text = forms.CharField(widget=TinyMCE(), label="Section Text")
+
+class EditImage(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    image_name = forms.CharField(label="Image Name", max_length=100)
+    image_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Image Summary")
+
+class EditVideo(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    video_name = forms.CharField(label="Video Name", max_length=100)
+    video_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Video Summary")
+
+class EditAudio(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    audio_name = forms.CharField(label="Audio Name", max_length=100)
+    audio_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Audio Summary")
+
+class EditFile(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    file_name = forms.CharField(label="File Name", max_length=100)
+    file_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="File Summary")

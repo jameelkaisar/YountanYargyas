@@ -1,0 +1,15 @@
+{% extends "main/includes/header.html" %}
+
+{% block content %}
+    <div class="card card-panel grey lighten-5 z-depth-1">
+        <h3 align="center">{{ title }}</h3>
+        <div class="divider"></div>
+        <p>
+            <form action="/edit-data" method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <p style="display: flex; justify-content: center;"><button type="submit" class="btn">{{ title }}</button></p>
+            </form>
+        </p>
+    </div>
+{% endblock %}

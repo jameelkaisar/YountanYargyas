@@ -3,7 +3,9 @@
 <html lang="en-US">
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% if title %}{{ title }} - Yountan Yargyas{% else %}Yountan Yargyas{% endif %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="{% static 'main/icons/favicon.ico' %}" type="image/x-icon">
   <link rel="stylesheet" href="{% static 'main/icons/icon.css' %}">
   <link rel="stylesheet" href="{% static 'main/css/materialize.min.css' %}">
   <link rel="stylesheet" href="{% static 'tinymce/css/prism.css' %}">

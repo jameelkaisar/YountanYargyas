@@ -23,7 +23,7 @@
         </a>
     </div>
 
-    {% if  user.is_superuser %}
+    {% if editor %}
         <ul class="collapsible">
             <li>
                 <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Upload Audio</big></div>
@@ -37,24 +37,6 @@
                 </div>
             </li>
         </ul>
-    {% else %}
-        {% for group in user.groups.all %}
-            {%  if 'teacher' == group.name %}
-                <ul class="collapsible">
-                    <li>
-                        <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Upload Audio</big></div>
-                        <div class="collapsible-body">
-                            <form method="POST" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                {{ form.as_p }}
-                                <p><label style="margin-right: 25px;">Audio:</label><label for="id_audio_file" class="btn">Choose Audio</label></p>
-                                <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Upload Audio</button></p>
-                            </form>
-                        </div>
-                    </li>
-                </ul>
-            {% endif %}
-        {% endfor %}
     {% endif %}
 
     <div class="row">
@@ -63,38 +45,51 @@
                 <div class="card">
                     <div class="card-image" style="width: 100%; background-color: black; padding: 10px;" align="center">
                         <audio class="section" style=" max-width: 100%; max-height: 100%;" controls>
-                            <source src="{{ audio.audio_file.url }}" type="audio/mpeg">
+                            <source src="{% if audio.audio_file %}{{ audio.audio_file.url }}{% endif %}" type="audio/mpeg">
                             <span class="white-text">Your browser does not support the audio element.</span>
                         </audio>
-                        <a href="#modal{{ forloop.counter }}" class="btn-floating halfway-fab waves-effect waves-light red modal-trigger"><i class="material-icons">info_outline</i></a>
+                        <a href="#modal{{ forloop.counter }}i" class="btn-floating halfway-fab waves-effect waves-light red modal-trigger"><i class="material-icons">info_outline</i></a>
                     </div>
                     <div class="card-content">
-                        <span class="card-title"><b>{{ audio.audio_name }}</b></span>
+                        <span class="card-title" style="display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; height: 1.5em; line-height: 1.5;"><b>{{ audio.audio_name }}</b></span>
                         <p style="display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; height: 1.5em; line-height: 1.5;">{{ audio.audio_summary }}</p>
                     </div>
                     <div class="card-action" align="center">
-                        <input type="text" value="{{ audio.audio_file.url }}" disabled>
-                        <a id="copy-button-{{ forloop.counter }}" class="btn tooltipped" data-position="bottom" data-tooltip="Click to Copy!" onclick="copyToClipboard('{{ audio.audio_file.url }}', '{{ forloop.counter }}')">Copy Link</a>
-                        <a href="{{ audio.audio_file.url }}" class="btn tooltipped" data-position="bottom" data-tooltip="Click to Download!" download>Download</a>
+                        <input type="text" value="{% if audio.audio_file %}{{ audio.audio_file.url }}{% endif %}" disabled>
+                        <a id="copy-button-{{ forloop.counter }}" class="btn tooltipped" data-position="bottom" data-tooltip="Click to Copy!" onclick="copyToClipboard('{% if audio.audio_file %}{{ audio.audio_file.url }}{% endif %}', '{{ forloop.counter }}')">Copy Link</a>
+                        <a {% if audio.audio_file %}href="{{ audio.audio_file.url }}"{% endif %} class="btn tooltipped" data-position="bottom" data-tooltip="Click to Download!">Download</a>
                     </div>
-                    {% if  user.is_superuser %}
+                    {% if editor %}
                         <div class="card-action" align="center">
-                            <a href="#!" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
-                            <a href="#!" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
+                            <form action="/edit-data" method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="data_type" value="audio">
+                                <input type="hidden" name="data_id" value="{{ audio.id }}">
+                                <input type="hidden" name="data_next" value="{{ next }}">
+                                <button type="submit" class="btn waves-light"><i class="material-icons left">edit</i>Edit</button>
+                            </form>
+                            <a href="#modal{{ forloop.counter }}" class="modal-trigger btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
                         </div>
-                    {% else %}
-                        {% for group in user.groups.all %}
-                            {%  if 'teacher' == group.name %}
-                                <div class="card-action" align="center">
-                                    <a href="#!" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
-                                    <a href="#!" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+                        <div id="modal{{ forloop.counter }}" class="modal">
+                            <div class="modal-content">
+                                <h4>Confirmation</h4>
+                                <p>Are you sure you want to delete this audio?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <form action="/delete-data" method="POST" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="data_type" value="audio">
+                                    <input type="hidden" name="data_id" value="{{ audio.id }}">
+                                    <input type="hidden" name="data_next" value="{{ next }}">
+                                    <button type="submit" class="waves-effect waves-red btn-flat">Yes</button>
+                                </form>
+                                <button href="#!" class="modal-close waves-effect waves-green btn-flat">No</button>
+                            </div>
+                        </div>
                     {% endif %}
                 </div>
             </div>
-            <div id="modal{{ forloop.counter }}" class="modal">
+            <div id="modal{{ forloop.counter }}i" class="modal">
                 <div class="modal-content">
                     <h4>{{ audio.audio_name }}</h4>
                     <p>{{ audio.audio_summary|linebreaks }}</p>

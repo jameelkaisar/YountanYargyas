@@ -27,20 +27,33 @@
         <p>{{ student_section.section_summary|linebreaks }}</p>
         <div class="divider"></div>
         <p>{{ student_section.section_text|safe }}</p>
-        {% if  user.is_superuser %}
+        {% if editor %}
             <div align="right">
-                <a href="#!" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
-                <a href="#!" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
+                <form action="/edit-data" method="POST" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="data_type" value="content">
+                    <input type="hidden" name="data_id" value="{{ student_section.id }}">
+                    <input type="hidden" name="data_next" value="{{ next }}">
+                    <button type="submit" class="btn waves-light"><i class="material-icons left">edit</i>Edit</button>
+                </form>
+                <a href="#modal1" class="modal-trigger btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
             </div>
-        {% else %}
-            {% for group in user.groups.all %}
-                {%  if 'teacher' == group.name %}
-                    <div align="right">
-                        <a href="#!" class="btn waves-light" onclick="alert('This feature will be added soon!');"><i class="material-icons left">edit</i>Edit</a>
-                        <a href="#!" class="btn orange darken-4" onclick="alert('This feature will be added soon!');"><i class="material-icons left">delete</i>Delete</a>
-                    </div>
-                {% endif %}
-            {% endfor %}
+            <div id="modal1" class="modal">
+                <div class="modal-content">
+                    <h4>Confirmation</h4>
+                    <p>Are you sure you want to delete this section?</p>
+                </div>
+                <div class="modal-footer">
+                    <form action="/delete-data" method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="data_type" value="content">
+                        <input type="hidden" name="data_id" value="{{ student_section.id }}">
+                        <input type="hidden" name="data_next" value="{{ next }}">
+                        <button type="submit" class="waves-effect waves-red btn-flat">Yes</button>
+                    </form>
+                    <button href="#!" class="modal-close waves-effect waves-green btn-flat">No</button>
+                </div>
+            </div>
         {% endif %}
     </div>
 {% endblock %}
