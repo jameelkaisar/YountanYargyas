@@ -18,3 +18,11 @@ html {
     background-color: #dadada;
 }
 
+.custom-badge {
+    border-radius: 50rem;
+    padding-top: .2rem;
+    padding-bottom: .2rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    display: inline-block;
+}

@@ -1,0 +1,82 @@
+{% extends "main/includes/header.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="z-depth-1">
+        <ul class="breadcrumbs">
+            <li><a href="/">Home</a></li>
+            <li>Student Feed</li>
+            <li><b>Profiles</b></li>
+        </ul>
+    </div>
+
+    <div class="row grey lighten-5 z-depth-1" align="center">
+        <a href="/student-feed/feed" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="col s4 m4 l4 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>Feed</b></div>
+        </a>
+        <div class="col s4 m4 l4 upload-bar" style="padding-top: 15px; padding-bottom: 15px; background-color: #dadada;"><b>Profiles</b></div>
+        <a href="/student-feed/posts" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="col s4 m4 l4 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>My Posts</b></div>
+        </a>
+    </div>
+
+    <div class="row">
+        {% for user in page_obj %}
+            <div class="card card-panel grey lighten-5 z-depth-1">
+                <a href="/student-feed/profiles/{{ user.username }}" style="color: inherit; text-decoration: inherit;">
+                    <span class="card-title"><b>{{ user.username }}</b></span>
+                </a>
+                {% if user.is_superuser %}
+                    <span class="custom-badge green" style="color: #fff; margin-left: 1rem;">Admin</span>
+                {% elif teacher_group in user.groups.all %}
+                    <span class="custom-badge green" style="color: #fff; margin-left: 1rem;">Teacher</span>
+                {% else %}
+                    <span class="custom-badge blue" style="color: #fff; margin-left: 1rem;">Student</span>
+                {% endif %}
+                {% if not user.is_active %}
+                    <span class="custom-badge red" style="color: #fff;">Disabled</span>
+                {% endif %}
+                <br>
+                <small>Joined: {{ user.date_joined|date:'M j, Y' }}</small>
+            </div>
+        {% empty %}
+            <div class="card card-panel grey lighten-5 z-depth-1" align="center">
+                <span class="card-title"><b>This section is empty!</b></span>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if page_obj %}
+        <div align="center">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="waves-effect"><a href="?page=1"><i class="material-icons">first_page</i></a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.previous_page_number }}"><i class="material-icons">chevron_left</i></a></li>
+                {% else %}
+                    <li class="disabled"><a><i class="material-icons">first_page</i></a></li>
+                    <li class="disabled"><a><i class="material-icons">chevron_left</i></a></li>
+                {% endif %}
+                {% if page_obj.number|add:'-2' > 0 %}
+                    <li class="waves-effect"><a href="?page={{ page_obj.number|add:'-2' }}">{{ page_obj.number|add:'-2' }}</a></li>
+                {% endif %}
+                {% if page_obj.number|add:'-1' > 0 %}
+                    <li class="waves-effect"><a href="?page={{ page_obj.number|add:'-1' }}">{{ page_obj.number|add:'-1' }}</a></li>
+                {% endif %}
+                <li class="active"><a>{{ page_obj.number }}</a></li>
+                {% if page_obj.number|add:'1' <= page_obj.paginator.num_pages %}
+                    <li class="waves-effect"><a href="?page={{ page_obj.number|add:'1' }}">{{ page_obj.number|add:'1' }}</a></li>
+                {% endif %}
+                {% if page_obj.number|add:'2' <= page_obj.paginator.num_pages %}
+                    <li class="waves-effect"><a href="?page={{ page_obj.number|add:'2' }}">{{ page_obj.number|add:'2' }}</a></li>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <li class="waves-effect"><a href="?page={{ page_obj.next_page_number }}"><i class="material-icons">chevron_right</i></a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.paginator.num_pages }}"><i class="material-icons">last_page</i></a></li>
+                {% else %}
+                    <li class="disabled"><a><i class="material-icons">chevron_right</i></a></li>
+                    <li class="disabled"><a><i class="material-icons">last_page</i></a></li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}

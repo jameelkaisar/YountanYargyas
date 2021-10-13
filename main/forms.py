@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed
 from tinymce.widgets import TinyMCE
 
 class MyRegistrationForm(UserCreationForm):
@@ -79,6 +79,13 @@ class AddFile(forms.ModelForm):
         labels = {"file_name": "File Name", "file_summary": "File Summary", "file_file": ""}
         widgets = {"file_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "file_file": forms.FileInput(attrs={"style": "display: none;"})}
 
+class AddFeed(forms.ModelForm):
+    class Meta:
+        model = UploadFeed
+        fields = ["feed_text", "feed_file"]
+        labels = {"feed_text": "Text", "feed_file": ""}
+        widgets = {"feed_text": forms.Textarea(attrs={"class": "materialize-textarea"}), "feed_file": forms.FileInput(attrs={"style": "display: none;"})}
+
 class EditClass(forms.Form):
     data_id = forms.CharField(widget=forms.HiddenInput())
     data_type = forms.CharField(widget=forms.HiddenInput())
@@ -135,3 +142,9 @@ class EditFile(forms.Form):
     data_next = forms.CharField(widget=forms.HiddenInput())
     file_name = forms.CharField(label="File Name", max_length=100)
     file_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="File Summary")
+
+class EditFeed(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    feed_text = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Text", max_length=5000)

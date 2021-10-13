@@ -1,0 +1,172 @@
+{% extends "main/includes/header.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="z-depth-1">
+        <ul class="breadcrumbs">
+            <li><a href="/">Home</a></li>
+            <li>Student Feed</li>
+            <li><b>Feed</b></li>
+        </ul>
+    </div>
+
+    <div class="row grey lighten-5 z-depth-1" align="center">
+        <div class="col s4 m4 l4 upload-bar" style="padding-top: 15px; padding-bottom: 15px; background-color: #dadada;"><b>Feed</b></div>
+        <a href="/student-feed/profiles" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="col s4 m4 l4 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>Profiles</b></div>
+        </a>
+        <a href="/student-feed/posts" style="display: block; color: inherit; text-decoration: inherit;">
+            <div class="col s4 m4 l4 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>My Posts</b></div>
+        </a>
+    </div>
+
+    <ul class="collapsible">
+        <li>
+            <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>New Post</big></div>
+            <div class="collapsible-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <p><label style="margin-right: 25px;">File:</label><label for="id_feed_file" class="btn">Choose File</label></p>
+                    <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Post</button></p>
+                </form>
+            </div>
+        </li>
+    </ul>
+
+    <div class="row">
+        {% for post in page_obj %}
+            <div class="card card-panel grey lighten-5 z-depth-1">
+                <a href="/student-feed/profiles/{{ post.feed_user.username }}" style="color: inherit; text-decoration: inherit;">
+                    <span class="card-title"><b>{{ post.feed_user.username }}</b></span>
+                </a>
+                <br>
+                <small>{{ post.feed_date|date:'M j, Y | g:i A' }}</small>
+                <p><div class="divider"></div></p>
+                {% if post.feed_file %}
+                    {% if post.file_type == 'image' %}
+                        <div align="center">
+                            <p>
+                                <img class="materialboxed" style="max-width: 100%;" src="{{ post.feed_file.url }}">
+                            </p>
+                        </div>
+                    {% elif post.file_type == 'video' %}
+                        <div align="center">
+                            <p>
+                                <video class="responsive-video" controls>
+                                    <source src="{{ post.feed_file.url }}" type='video/mp4'>
+                                    Your browser does not support the video tag.
+                                </video>
+                            </p>
+                        </div>
+                    {% elif post.file_type == 'audio' %}
+                        <div align="center">
+                            <p>
+                                <audio style="width: 100%" controls>
+                                    <source src="{{ post.feed_file.url }}" type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            </p>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                <p>{{ post.feed_text|linebreaks }}</p>
+                {% if post.feed_file %}
+                    {% if post.file_type == 'file' %}
+                        <div align="center">
+                            <p>
+                                <a href="{{ post.feed_file.url }}" class="btn waves-light"><i class="material-icons left">download</i>Download</a>
+                            </p>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                {% if post.feed_user == request.user %}
+                    <div class="card-action" align="right">
+                        <form action="/edit-data" method="POST" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="data_type" value="post">
+                            <input type="hidden" name="data_id" value="{{ post.id }}">
+                            <input type="hidden" name="data_next" value="{{ next }}">
+                            <button type="submit" class="btn waves-light"><i class="material-icons left">edit</i>Edit</button>
+                        </form>
+                        <a href="#modal{{ forloop.counter }}" class="modal-trigger btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
+                    </div>
+                    <div id="modal{{ forloop.counter }}" class="modal">
+                        <div class="modal-content">
+                            <h4>Confirmation</h4>
+                            <p>Are you sure you want to delete this post?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <form action="/delete-data" method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="data_type" value="post">
+                                <input type="hidden" name="data_id" value="{{ post.id }}">
+                                <input type="hidden" name="data_next" value="{{ next }}">
+                                <button type="submit" class="waves-effect waves-red btn-flat">Yes</button>
+                            </form>
+                            <button href="#!" class="modal-close waves-effect waves-green btn-flat">No</button>
+                        </div>
+                    </div>
+                {% elif editor %}
+                    <div class="card-action" align="right">
+                        <a href="#modal{{ forloop.counter }}" class="modal-trigger btn orange darken-4"><i class="material-icons left">delete</i>Delete</a>
+                    </div>
+                    <div id="modal{{ forloop.counter }}" class="modal">
+                        <div class="modal-content">
+                            <h4>Confirmation</h4>
+                            <p>Are you sure you want to delete this post?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <form action="/delete-data" method="POST" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="data_type" value="post">
+                                <input type="hidden" name="data_id" value="{{ post.id }}">
+                                <input type="hidden" name="data_next" value="{{ next }}">
+                                <button type="submit" class="waves-effect waves-red btn-flat">Yes</button>
+                            </form>
+                            <button href="#!" class="modal-close waves-effect waves-green btn-flat">No</button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <div class="card card-panel grey lighten-5 z-depth-1" align="center">
+                <span class="card-title"><b>This section is empty!</b></span>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if page_obj %}
+        <div align="center">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="waves-effect"><a href="?page=1"><i class="material-icons">first_page</i></a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.previous_page_number }}"><i class="material-icons">chevron_left</i></a></li>
+                {% else %}
+                    <li class="disabled"><a><i class="material-icons">first_page</i></a></li>
+                    <li class="disabled"><a><i class="material-icons">chevron_left</i></a></li>
+                {% endif %}
+                {% if page_obj.number|add:'-2' > 0 %}
+                    <li class="waves-effect"><a href="?page={{ page_obj.number|add:'-2' }}">{{ page_obj.number|add:'-2' }}</a></li>
+                {% endif %}
+                {% if page_obj.number|add:'-1' > 0 %}
+                    <li class="waves-effect"><a href="?page={{ page_obj.number|add:'-1' }}">{{ page_obj.number|add:'-1' }}</a></li>
+                {% endif %}
+                <li class="active"><a>{{ page_obj.number }}</a></li>
+                {% if page_obj.number|add:'1' <= page_obj.paginator.num_pages %}
+                    <li class="waves-effect"><a href="?page={{ page_obj.number|add:'1' }}">{{ page_obj.number|add:'1' }}</a></li>
+                {% endif %}
+                {% if page_obj.number|add:'2' <= page_obj.paginator.num_pages %}
+                    <li class="waves-effect"><a href="?page={{ page_obj.number|add:'2' }}">{{ page_obj.number|add:'2' }}</a></li>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <li class="waves-effect"><a href="?page={{ page_obj.next_page_number }}"><i class="material-icons">chevron_right</i></a></li>
+                    <li class="waves-effect"><a href="?page={{ page_obj.paginator.num_pages }}"><i class="material-icons">last_page</i></a></li>
+                {% else %}
+                    <li class="disabled"><a><i class="material-icons">chevron_right</i></a></li>
+                    <li class="disabled"><a><i class="material-icons">last_page</i></a></li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed
 from django.http import HttpResponse
-from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
+from django.contrib.auth import login, logout, authenticate, update_session_auth_hash, get_user_model
+from django.contrib.auth.models import Group
 from django.contrib import messages
-from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddImage, AddVideo, AddAudio, AddFile, EditClass, EditSubject, EditChapter, EditSection, EditImage, EditVideo, EditAudio, EditFile
+from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddImage, AddVideo, AddAudio, AddFile, AddFeed, EditClass, EditSubject, EditChapter, EditSection, EditImage, EditVideo, EditAudio, EditFile, EditFeed
 from django.core.paginator import Paginator
 from django.utils.text import slugify
 
@@ -260,8 +261,94 @@ def upload_files(request):
         messages.error(request, "You must be logged in to view this page!")
         return redirect(f"/login?next={request.get_full_path()}")
 
+def student_feed(request):
+    if request.user.is_authenticated:
+        return redirect("main:sf_feed")
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect(f"/login?next={request.get_full_path()}")
+
+def sf_feed(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            form = AddFeed(request.POST, request.FILES)
+            if form.is_valid():
+                form_instance = form.save(commit=False)
+                form_instance.feed_user = request.user
+                form.save()
+                messages.info(request, "Posted Successfully!")
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, error)
+
+        form = AddFeed()
+        upload_feed = UploadFeed.objects.all().order_by('-feed_date')
+        page_upload_feed = Paginator(upload_feed, 12)
+        page_number = request.GET.get('page')
+        page_obj = page_upload_feed.get_page(page_number)
+        return render(
+            request=request,
+            template_name="main/sf-feed.html",
+            context={"title": "Feed", "editor": is_editor(request.user), "page_obj": page_obj, "form": form, "next": request.get_full_path()}
+            )
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect(f"/login?next={request.get_full_path()}")
+
+def sf_profiles(request):
+    if request.user.is_authenticated:
+        User = get_user_model()
+        users = User.objects.order_by('username')
+        page_users = Paginator(users, 12)
+        page_number = request.GET.get('page')
+        page_obj = page_users.get_page(page_number)
+        return render(
+            request=request,
+            template_name="main/sf-profiles.html",
+            context={"title": "Profiles", "editor": is_editor(request.user), "teacher_group": Group.objects.get(name='teacher'), "page_obj": page_obj, "next": request.get_full_path()}
+            )
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect(f"/login?next={request.get_full_path()}")
+
+def sf_profile_posts(request, username_slug):
+    if request.user.is_authenticated:
+        User = get_user_model()
+        users = [x.username for x in User.objects.all()]
+        if username_slug in users:
+            upload_feed = UploadFeed.objects.filter(feed_user=User.objects.get(username=username_slug)).order_by('-feed_date')
+            page_upload_feed = Paginator(upload_feed, 12)
+            page_number = request.GET.get('page')
+            page_obj = page_upload_feed.get_page(page_number)
+            return render(
+                request=request,
+                template_name="main/sf-profile-posts.html",
+                context={"title": f"{username_slug}", "editor": is_editor(request.user), "page_obj": page_obj, "total_posts": len(upload_feed), "username_slug": username_slug, "next": request.get_full_path()}
+                )
+        else:
+            messages.error(request, "User not found!")
+            return redirect("main:sf_profiles")
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect(f"/login?next={request.get_full_path()}")
+
+def sf_posts(request):
+    if request.user.is_authenticated:
+        upload_feed = UploadFeed.objects.filter(feed_user=request.user).order_by('-feed_date')
+        page_upload_feed = Paginator(upload_feed, 12)
+        page_number = request.GET.get('page')
+        page_obj = page_upload_feed.get_page(page_number)
+        return render(
+            request=request,
+            template_name="main/sf-posts.html",
+            context={"title": "My Posts", "editor": is_editor(request.user), "page_obj": page_obj, "next": request.get_full_path()}
+            )
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect(f"/login?next={request.get_full_path()}")
+
 def student_classes(request):
-    # Add Edit/Delete Class Form?
     if request.method == "POST":
         form = AddClass(request.POST)
         if form.is_valid():
@@ -280,7 +367,6 @@ def student_classes(request):
         )
 
 def student_class(request, class_slug):
-    # Add Edit/Delete Subject Form?
     class_slugs = [c.class_slug for c in StudentClass.objects.all()]
     if class_slug in class_slugs:
         class_slug_name = StudentClass.objects.filter(class_slug=class_slug)[0].student_class
@@ -307,7 +393,6 @@ def student_class(request, class_slug):
         return redirect("main:student_classes")
 
 def student_subject(request, class_slug, subject_slug):
-    # Add Edit/Delete Chapter Form?
     class_slugs = [c.class_slug for c in StudentClass.objects.all()]
     if class_slug in class_slugs:
         class_slug_name = StudentClass.objects.filter(class_slug=class_slug)[0].student_class
@@ -341,7 +426,6 @@ def student_subject(request, class_slug, subject_slug):
         return redirect("main:student_classes")
 
 def student_chapter(request, class_slug, subject_slug, chapter_slug):
-    # Add Edit/Delete Section Form?
     class_slugs = [c.class_slug for c in StudentClass.objects.all()]
     if class_slug in class_slugs:
         class_slug_name = StudentClass.objects.filter(class_slug=class_slug)[0].student_class
@@ -386,7 +470,6 @@ def student_chapter(request, class_slug, subject_slug, chapter_slug):
         return redirect("main:student_classes")
 
 def student_section(request, class_slug, subject_slug, chapter_slug, section_slug):
-    # Add Edit/Delete Section Form?
     class_slugs = [c.class_slug for c in StudentClass.objects.all()]
     if class_slug in class_slugs:
         class_slug_name = StudentClass.objects.filter(class_slug=class_slug)[0].student_class
@@ -422,9 +505,9 @@ def student_section(request, class_slug, subject_slug, chapter_slug, section_slu
         return redirect("main:student_classes")
 
 def delete_data(request):
-    if request.user.is_authenticated and is_editor(request.user):
+    if request.user.is_authenticated:
         if request.method == "POST":
-            if request.POST.get('data_type') == "content":
+            if request.POST.get('data_type') == "content" and is_editor(request.user):
                 try:
                     instance = StudentSection.objects.get(id=request.POST.get('data_id'))
                     instance.delete()
@@ -435,7 +518,7 @@ def delete_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "section":
+            elif request.POST.get('data_type') == "section" and is_editor(request.user):
                 try:
                     instance = StudentSection.objects.get(id=request.POST.get('data_id'))
                     instance.delete()
@@ -446,7 +529,7 @@ def delete_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "chapter":
+            elif request.POST.get('data_type') == "chapter" and is_editor(request.user):
                 try:
                     if StudentSection.objects.filter(student_chapter=request.POST.get('data_id')).count():
                         messages.error(request, "Non-empty Chapters can't be Deleted!")
@@ -460,7 +543,7 @@ def delete_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "subject":
+            elif request.POST.get('data_type') == "subject" and is_editor(request.user):
                 try:
                     if StudentChapter.objects.filter(student_subject=request.POST.get('data_id')).count():
                         messages.error(request, "Non-empty Subjects can't be Deleted!")
@@ -474,7 +557,7 @@ def delete_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "class":
+            elif request.POST.get('data_type') == "class" and is_editor(request.user):
                 try:
                     if StudentSubject.objects.filter(student_class=request.POST.get('data_id')).count():
                         messages.error(request, "Non-empty Classes can't be Deleted!")
@@ -488,7 +571,7 @@ def delete_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "image":
+            elif request.POST.get('data_type') == "image" and is_editor(request.user):
                 try:
                     instance = UploadImage.objects.get(id=request.POST.get('data_id'))
                     instance.delete()
@@ -499,7 +582,7 @@ def delete_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "video":
+            elif request.POST.get('data_type') == "video" and is_editor(request.user):
                 try:
                     instance = UploadVideo.objects.get(id=request.POST.get('data_id'))
                     instance.delete()
@@ -510,7 +593,7 @@ def delete_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "audio":
+            elif request.POST.get('data_type') == "audio" and is_editor(request.user):
                 try:
                     instance = UploadAudio.objects.get(id=request.POST.get('data_id'))
                     instance.delete()
@@ -521,13 +604,27 @@ def delete_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "file":
+            elif request.POST.get('data_type') == "file" and is_editor(request.user):
                 try:
                     instance = UploadFile.objects.get(id=request.POST.get('data_id'))
                     instance.delete()
                     messages.info(request, "File Deleted Successfully!")
                     if request.POST.get('data_next'):
                         return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "post":
+                try:
+                    instance = UploadFeed.objects.get(id=request.POST.get('data_id'))
+                    if instance.feed_user == request.user or is_editor(request.user):
+                        instance.delete()
+                        messages.info(request, "Post Deleted Successfully!")
+                        if request.POST.get('data_next'):
+                            return redirect(request.POST.get('data_next'))
+                        else:
+                            return redirect("main:homepage")
                     else:
                         return redirect("main:homepage")
                 except:
@@ -540,9 +637,9 @@ def delete_data(request):
         return redirect("main:homepage")
 
 def edit_data(request):
-    if request.user.is_authenticated and is_editor(request.user):
+    if request.user.is_authenticated:
         if request.method == "POST":
-            if request.POST.get('data_type') == "content":
+            if request.POST.get('data_type') == "content" and is_editor(request.user):
                 try:
                     instance = StudentSection.objects.get(id=request.POST.get('data_id'))
                     form = EditSection(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "student_section": instance.student_section, "section_summary": instance.section_summary, "section_text": instance.section_text})
@@ -553,7 +650,7 @@ def edit_data(request):
                         )
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "edit-content":
+            elif request.POST.get('data_type') == "edit-content" and is_editor(request.user):
                 try:
                     instance = StudentSection.objects.get(id=request.POST.get('data_id'))
                     instance.student_section = request.POST.get('student_section')
@@ -585,7 +682,7 @@ def edit_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "section":
+            elif request.POST.get('data_type') == "section" and is_editor(request.user):
                 try:
                     instance = StudentSection.objects.get(id=request.POST.get('data_id'))
                     form = EditSection(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "student_section": instance.student_section, "section_summary": instance.section_summary, "section_text": instance.section_text})
@@ -596,7 +693,7 @@ def edit_data(request):
                         )
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "edit-section":
+            elif request.POST.get('data_type') == "edit-section" and is_editor(request.user):
                 try:
                     instance = StudentSection.objects.get(id=request.POST.get('data_id'))
                     instance.student_section = request.POST.get('student_section')
@@ -628,7 +725,7 @@ def edit_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "chapter":
+            elif request.POST.get('data_type') == "chapter" and is_editor(request.user):
                 try:
                     instance = StudentChapter.objects.get(id=request.POST.get('data_id'))
                     form = EditChapter(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "student_chapter": instance.student_chapter, "chapter_summary": instance.chapter_summary})
@@ -639,7 +736,7 @@ def edit_data(request):
                         )
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "edit-chapter":
+            elif request.POST.get('data_type') == "edit-chapter" and is_editor(request.user):
                 try:
                     instance = StudentChapter.objects.get(id=request.POST.get('data_id'))
                     instance.student_chapter = request.POST.get('student_chapter')
@@ -669,7 +766,7 @@ def edit_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "subject":
+            elif request.POST.get('data_type') == "subject" and is_editor(request.user):
                 try:
                     instance = StudentSubject.objects.get(id=request.POST.get('data_id'))
                     form = EditSubject(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "student_subject": instance.student_subject, "subject_summary": instance.subject_summary})
@@ -680,7 +777,7 @@ def edit_data(request):
                         )
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "edit-subject":
+            elif request.POST.get('data_type') == "edit-subject" and is_editor(request.user):
                 try:
                     instance = StudentSubject.objects.get(id=request.POST.get('data_id'))
                     instance.student_subject = request.POST.get('student_subject')
@@ -710,7 +807,7 @@ def edit_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "class":
+            elif request.POST.get('data_type') == "class" and is_editor(request.user):
                 try:
                     instance = StudentClass.objects.get(id=request.POST.get('data_id'))
                     form = EditClass(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "student_class": instance.student_class, "class_summary": instance.class_summary})
@@ -721,7 +818,7 @@ def edit_data(request):
                         )
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "edit-class":
+            elif request.POST.get('data_type') == "edit-class" and is_editor(request.user):
                 try:
                     instance = StudentClass.objects.get(id=request.POST.get('data_id'))
                     instance.student_class = request.POST.get('student_class')
@@ -751,7 +848,7 @@ def edit_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "image":
+            elif request.POST.get('data_type') == "image" and is_editor(request.user):
                 try:
                     instance = UploadImage.objects.get(id=request.POST.get('data_id'))
                     form = EditImage(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "image_name": instance.image_name, "image_summary": instance.image_summary})
@@ -762,7 +859,7 @@ def edit_data(request):
                         )
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "edit-image":
+            elif request.POST.get('data_type') == "edit-image" and is_editor(request.user):
                 try:
                     instance = UploadImage.objects.get(id=request.POST.get('data_id'))
                     instance.image_name = request.POST.get('image_name')
@@ -778,7 +875,7 @@ def edit_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "video":
+            elif request.POST.get('data_type') == "video" and is_editor(request.user):
                 try:
                     instance = UploadVideo.objects.get(id=request.POST.get('data_id'))
                     form = EditVideo(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "video_name": instance.video_name, "video_summary": instance.video_summary})
@@ -789,7 +886,7 @@ def edit_data(request):
                         )
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "edit-video":
+            elif request.POST.get('data_type') == "edit-video" and is_editor(request.user):
                 try:
                     instance = UploadVideo.objects.get(id=request.POST.get('data_id'))
                     instance.video_name = request.POST.get('video_name')
@@ -805,7 +902,7 @@ def edit_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "audio":
+            elif request.POST.get('data_type') == "audio" and is_editor(request.user):
                 try:
                     instance = UploadAudio.objects.get(id=request.POST.get('data_id'))
                     form = EditAudio(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "audio_name": instance.audio_name, "audio_summary": instance.audio_summary})
@@ -816,7 +913,7 @@ def edit_data(request):
                         )
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "edit-audio":
+            elif request.POST.get('data_type') == "edit-audio" and is_editor(request.user):
                 try:
                     instance = UploadAudio.objects.get(id=request.POST.get('data_id'))
                     instance.audio_name = request.POST.get('audio_name')
@@ -832,7 +929,7 @@ def edit_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "file":
+            elif request.POST.get('data_type') == "file" and is_editor(request.user):
                 try:
                     instance = UploadFile.objects.get(id=request.POST.get('data_id'))
                     form = EditFile(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "file_name": instance.file_name, "file_summary": instance.file_summary})
@@ -843,7 +940,7 @@ def edit_data(request):
                         )
                 except:
                     return redirect("main:homepage")
-            elif request.POST.get('data_type') == "edit-file":
+            elif request.POST.get('data_type') == "edit-file" and is_editor(request.user):
                 try:
                     instance = UploadFile.objects.get(id=request.POST.get('data_id'))
                     instance.file_name = request.POST.get('file_name')
@@ -855,6 +952,38 @@ def edit_data(request):
                         messages.error(request, "Error while saving the file!")
                     if request.POST.get('data_next'):
                         return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "post":
+                try:
+                    instance = UploadFeed.objects.get(id=request.POST.get('data_id'))
+                    if instance.feed_user == request.user:
+                        form = EditFeed(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "feed_text": instance.feed_text})
+                        return render(
+                            request=request,
+                            template_name="main/edit-data.html",
+                            context={"title": "Edit Post", "form": form}
+                            )
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-post":
+                try:
+                    instance = UploadFeed.objects.get(id=request.POST.get('data_id'))
+                    if instance.feed_user == request.user:
+                        instance.feed_text = request.POST.get('feed_text')
+                        try:
+                            instance.save()
+                            messages.info(request, "Post Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the post!")
+                        if request.POST.get('data_next'):
+                            return redirect(request.POST.get('data_next'))
+                        else:
+                            return redirect("main:homepage")
                     else:
                         return redirect("main:homepage")
                 except:

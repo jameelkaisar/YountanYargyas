@@ -3,6 +3,8 @@ from datetime import datetime
 
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify
+from django.conf import settings
+from os.path import splitext
 
 # Create your models here.
 
@@ -178,3 +180,35 @@ class UploadFile(models.Model):
 
     def __str__(self):
         return self.file_name
+
+class UploadFeed(models.Model):
+    def user_directory_path(instance, filename):
+        return f"upload/feed/{instance.feed_user}/{filename}"
+
+    feed_text = models.CharField(max_length=5000)
+    feed_date = models.DateTimeField(auto_now_add=True)
+    feed_file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+
+    feed_user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="User", on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "Feed"
+
+    def file_type(self):
+        name, extension = splitext(self.feed_file.name.lower())
+        if extension in ['.apng', '.avif', '.gif', '.jpg', '.jpeg', '.jfif', '.pjpeg', '.pjp', '.png', '.svg', '.webp']:
+            return 'image'
+        elif extension in ['.mp4', 'webm']:
+            return 'video'
+        elif extension in ['.mp3', '.wav', '.ogg', '.m4a']:
+            return 'audio'
+        else:
+            return 'file'
+
+    def delete(self, *args, **kwargs):
+        if self.feed_file:
+            self.feed_file.storage.delete(self.feed_file.name)
+        super(UploadFeed, self).delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.feed_text[:15]+"..."
