@@ -68,6 +68,7 @@ def register(request):
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
+            return redirect(request.get_full_path())
 
         form = MyRegistrationForm
         return render(
@@ -100,6 +101,7 @@ def login_request(request):
                     messages.error(request, "Invalid username or password!")
             else:
                 messages.error(request, "Invalid username or password!")
+            return redirect(request.get_full_path())
 
         form = MyLoginForm()
         return render(
@@ -120,6 +122,7 @@ def change_password(request):
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
+            return redirect(request.get_full_path())
 
         form = ChangePasswordForm(request.user)
         return render(
@@ -168,6 +171,7 @@ def upload_images(request):
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
+            return redirect(request.get_full_path())
 
         form = AddImage()
         upload_image = list(reversed(UploadImage.objects.all()))
@@ -194,6 +198,7 @@ def upload_videos(request):
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
+            return redirect(request.get_full_path())
 
         form = AddVideo()
         upload_video = list(reversed(UploadVideo.objects.all()))
@@ -220,6 +225,7 @@ def upload_audios(request):
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
+            return redirect(request.get_full_path())
 
         form = AddAudio()
         upload_audio = list(reversed(UploadAudio.objects.all()))
@@ -246,6 +252,7 @@ def upload_files(request):
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
+            return redirect(request.get_full_path())
 
         form = AddFile()
         upload_file = list(reversed(UploadFile.objects.all()))
@@ -281,6 +288,7 @@ def sf_feed(request):
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
+            return redirect(request.get_full_path())
 
         form = AddFeed()
         upload_feed = UploadFeed.objects.all().order_by('-feed_date')
@@ -378,6 +386,7 @@ def messages_section(request):
                     messages.error(request, "Invalid Username!")
             except:
                 return redirect("main:homepage")
+            return redirect(request.get_full_path())
 
         form = NewChat()
         usernames = User.objects.values_list('username', flat=True).exclude(username=request.user.username)
@@ -428,6 +437,7 @@ def messages_chat(request, username_slug):
                             return redirect("main:homepage")
                     except:
                         return redirect("main:homepage")
+                    return redirect(request.get_full_path())
 
                 form = NewMessage(initial={"chat_recipient": username_slug})
                 recipient = User.objects.get(username=username_slug)
@@ -468,6 +478,7 @@ def student_classes(request):
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, error)
+        return redirect(request.get_full_path())
 
     form = AddClass()
     return render(
@@ -491,6 +502,7 @@ def student_class(request, class_slug):
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
+            return redirect(request.get_full_path())
 
         form = AddSubject(initial={"student_class": StudentClass.objects.filter(class_slug=class_slug)[0]})
         return render(
@@ -521,6 +533,7 @@ def student_subject(request, class_slug, subject_slug):
                     for field, errors in form.errors.items():
                         for error in errors:
                             messages.error(request, error)
+                return redirect(request.get_full_path())
 
             form = AddChapter(initial={"student_subject": StudentSubject.objects.filter(subject_slug=subject_slug, student_class__class_slug=class_slug)[0]})
             return render(
@@ -562,6 +575,7 @@ def student_chapter(request, class_slug, subject_slug, chapter_slug):
                         for field, errors in form.errors.items():
                             for error in errors:
                                 messages.error(request, error)
+                    return redirect(request.get_full_path())
 
                 form = AddSection(initial={"student_chapter": StudentChapter.objects.filter(chapter_slug=chapter_slug, student_subject__subject_slug=subject_slug, student_subject__student_class__class_slug=class_slug)[0]})
                 return render(
