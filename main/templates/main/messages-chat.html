@@ -1,0 +1,67 @@
+{% extends "main/includes/header.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+    <div class="z-depth-1">
+        <ul class="breadcrumbs">
+            <li><a href="/">Home</a></li>
+            <li><a href="/messages">Messages Section</a></li>
+            <li><b>{{ title }}</b></li>
+        </ul>
+    </div>
+
+    <div class="card card-panel grey lighten-5 z-depth-1">
+        <h3 align="center"><a href="/student-feed/profiles/{{ title }}" style="color: inherit; text-decoration: inherit;">{{ title }}</a></h3>
+    </div>
+
+    <div class="card card-panel grey lighten-5 z-depth-1">
+        {% for message in page_obj reversed %}
+            {% if message.message_user == user %}
+                <div align="right" style="margin-bottom: 10px;">
+                    <span class="blue" style="display: inline-block; border-radius: 15px; text-align: left; color: #fff; padding: 10px 20px; max-width: 70%;">{{ message.message_text }}</span>
+                    <br>
+                    <small style="margin-right: 20px;">{{ message.message_time|naturaltime }}</small>
+                </div>
+            {% else %}
+                <div align="left" style="margin-bottom: 10px;">
+                    <span class="red" style="display: inline-block; border-radius: 15px; text-align: left; color: #fff; padding: 10px 20px; max-width: 70%;">{{ message.message_text }}</span>
+                    <br>
+                    <small style="margin-left: 20px;">{{ message.message_time|naturaltime }}</small>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Send</button></p>
+        </form>
+
+        {% if page_obj %}
+            <div style="margin-top: 30px;">
+                <ul class="pagination">
+                    <span style="float: left;">
+                        {% if page_obj.has_next %}
+                            <li class="waves-effect"><a href="?page={{ page_obj.paginator.num_pages }}"><i class="material-icons">first_page</i></a></li>
+                            <li class="waves-effect"><a href="?page={{ page_obj.next_page_number }}"><i class="material-icons">chevron_left</i></a></li>
+                        {% else %}
+                            <li class="disabled"><a><i class="material-icons">first_page</i></a></li>
+                            <li class="disabled"><a><i class="material-icons">chevron_left</i></a></li>
+                        {% endif %}
+                    </span>
+                    <span style="float: right;">
+                        {% if page_obj.has_previous %}
+                            <li class="waves-effect"><a href="?page={{ page_obj.previous_page_number }}"><i class="material-icons">chevron_right</i></a></li>
+                            <li class="waves-effect"><a href="?page=1"><i class="material-icons">last_page</i></a></li>
+                        {% else %}
+                            <li class="disabled"><a><i class="material-icons">chevron_right</i></a></li>
+                            <li class="disabled"><a><i class="material-icons">last_page</i></a></li>
+                        {% endif %}
+                    </span>
+                </ul>
+                <div style="clear: both;"></div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

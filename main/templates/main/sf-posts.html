@@ -1,5 +1,6 @@
 {% extends "main/includes/header.html" %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
     <div class="z-depth-1">
@@ -27,7 +28,7 @@
                     <span class="card-title"><b>{{ post.feed_user.username }}</b></span>
                 </a>
                 <br>
-                <small>{{ post.feed_date|date:'M j, Y | g:i A' }}</small>
+                <small>{{ post.feed_date|naturaltime }}</small>
                 <p><div class="divider"></div></p>
                 {% if post.feed_file %}
                     {% if post.file_type == 'image' %}

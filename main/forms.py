@@ -148,3 +148,11 @@ class EditFeed(forms.Form):
     data_type = forms.CharField(widget=forms.HiddenInput())
     data_next = forms.CharField(widget=forms.HiddenInput())
     feed_text = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Text", max_length=5000)
+
+class NewChat(forms.Form):
+    chat_recipient = forms.CharField(widget=forms.TextInput(attrs={"class": "autocomplete"}), label="Username", max_length=150)
+    message_text = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Message", max_length=500)
+
+class NewMessage(forms.Form):
+    chat_recipient = forms.CharField(widget=forms.HiddenInput())
+    message_text = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Message", max_length=500)

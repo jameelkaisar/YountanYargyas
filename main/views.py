@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message
 from django.http import HttpResponse
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash, get_user_model
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import User, Group
 from django.contrib import messages
-from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddImage, AddVideo, AddAudio, AddFile, AddFeed, EditClass, EditSubject, EditChapter, EditSection, EditImage, EditVideo, EditAudio, EditFile, EditFeed
+from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddImage, AddVideo, AddAudio, AddFile, AddFeed, EditClass, EditSubject, EditChapter, EditSection, EditImage, EditVideo, EditAudio, EditFile, EditFeed, NewChat, NewMessage
 from django.core.paginator import Paginator
 from django.utils.text import slugify
 
@@ -344,6 +344,116 @@ def sf_posts(request):
             template_name="main/sf-posts.html",
             context={"title": "My Posts", "editor": is_editor(request.user), "page_obj": page_obj, "next": request.get_full_path()}
             )
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect(f"/login?next={request.get_full_path()}")
+
+def messages_section(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            try:
+                if User.objects.filter(username=request.POST.get('chat_recipient')).exists():
+                    if request.user.username != request.POST.get('chat_recipient'):
+                        recipient = User.objects.get(username=request.POST.get('chat_recipient'))
+                        chats = Chat.objects.filter(chat_recipients__in=[request.user])
+                        if chats.exists() and chats.filter(chat_recipients=recipient).exists():
+                            chat = chats.get(chat_recipients=recipient)
+                            chat.last_message_user = request.user
+                            chat.last_message_text = request.POST.get('message_text')
+                            chat.last_message_seen = False
+                            chat.save()
+                            message = Message(message_user=request.user, message_text=request.POST.get('message_text'), message_chat=chat)
+                            message.save()
+                            return redirect(f"/messages/{request.POST.get('chat_recipient')}")
+                        else:
+                            chat = Chat(last_message_user=request.user, last_message_text=request.POST.get('message_text'), last_message_seen=False)
+                            chat.save()
+                            chat.chat_recipients.add(request.user, User.objects.get(username=request.POST.get('chat_recipient')))
+                            message = Message(message_user=request.user, message_text=request.POST.get('message_text'), message_chat=chat)
+                            message.save()
+                            return redirect(f"/messages/{request.POST.get('chat_recipient')}")
+                    else:
+                        messages.error(request, "You can't send a message to yourself!")
+                else:
+                    messages.error(request, "Invalid Username!")
+            except:
+                return redirect("main:homepage")
+
+        form = NewChat()
+        usernames = User.objects.values_list('username', flat=True).exclude(username=request.user.username)
+        usernames_list = "\"" + "\":null,\"".join(usernames) + "\":null"
+        chats = Chat.objects.filter(chat_recipients__in=[request.user]).order_by('-last_message_time')
+        page_chats = Paginator(chats, 12)
+        page_number = request.GET.get('page')
+        page_obj = page_chats.get_page(page_number)
+        return render(
+            request=request,
+            template_name="main/messages-section.html",
+            context={"title": "Messages", "editor": is_editor(request.user), "teacher_group": Group.objects.get(name='teacher'), "page_obj": page_obj, "form": form, "usernames_list": usernames_list, "next": request.get_full_path()}
+            )
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect(f"/login?next={request.get_full_path()}")
+
+def messages_chat(request, username_slug):
+    if request.user.is_authenticated:
+        if User.objects.filter(username=username_slug).exists():
+            if request.user.username != username_slug:
+                if request.method == "POST":
+                    try:
+                        if User.objects.filter(username=request.POST.get('chat_recipient')).exists():
+                            if request.user.username != request.POST.get('chat_recipient'):
+                                recipient = User.objects.get(username=request.POST.get('chat_recipient'))
+                                chats = Chat.objects.filter(chat_recipients__in=[request.user])
+                                if chats.exists() and chats.filter(chat_recipients=recipient).exists():
+                                    chat = chats.get(chat_recipients=recipient)
+                                    chat.last_message_user = request.user
+                                    chat.last_message_text = request.POST.get('message_text')
+                                    chat.last_message_seen = False
+                                    chat.save()
+                                    message = Message(message_user=request.user, message_text=request.POST.get('message_text'), message_chat=chat)
+                                    message.save()
+                                    return redirect(f"/messages/{username_slug}")
+                                else:
+                                    chat = Chat(last_message_user=request.user, last_message_text=request.POST.get('message_text'), last_message_seen=False)
+                                    chat.save()
+                                    chat.chat_recipients.add(request.user, User.objects.get(username=request.POST.get('chat_recipient')))
+                                    message = Message(message_user=request.user, message_text=request.POST.get('message_text'), message_chat=chat)
+                                    message.save()
+                                    return redirect(f"/messages/{username_slug}")
+                            else:
+                                messages.error(request, "You can't send a message to yourself!")
+                                return redirect("main:messages_section")
+                        else:
+                            return redirect("main:homepage")
+                    except:
+                        return redirect("main:homepage")
+
+                form = NewMessage(initial={"chat_recipient": username_slug})
+                recipient = User.objects.get(username=username_slug)
+                chats = Chat.objects.filter(chat_recipients__in=[request.user])
+                if chats.exists() and chats.filter(chat_recipients=recipient).exists():
+                    chat = chats.get(chat_recipients=recipient)
+                    if chat.last_message_user != request.user:
+                        chat.last_message_seen = True
+                        chat.save()
+                    user_messages = Message.objects.filter(message_chat=chat).order_by('-message_time')
+                else:
+                    user_messages = []            
+                page_messages = Paginator(user_messages, 12)
+                page_number = request.GET.get('page')
+                page_obj = page_messages.get_page(page_number)
+                return render(
+                    request=request,
+                    template_name="main/messages-chat.html",
+                    context={"title": username_slug, "editor": is_editor(request.user), "teacher_group": Group.objects.get(name='teacher'), "page_obj": page_obj, "form": form, "next": request.get_full_path()}
+                    )
+            else:
+                messages.error(request, "You can't send a message to yourself!")
+                return redirect("main:messages_section")
+        else:
+            messages.error(request, "Invalid Username!")
+            return redirect("main:messages_section")
     else:
         messages.error(request, "You must be logged in to view this page!")
         return redirect(f"/login?next={request.get_full_path()}")

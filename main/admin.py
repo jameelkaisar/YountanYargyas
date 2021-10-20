@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message
 from django.db import models
 from tinymce.widgets import TinyMCE
 
@@ -26,3 +26,6 @@ admin.site.register(UploadAudio)
 admin.site.register(UploadFile)
 
 admin.site.register(UploadFeed)
+
+admin.site.register(Chat)
+admin.site.register(Message)

@@ -212,3 +212,22 @@ class UploadFeed(models.Model):
 
     def __str__(self):
         return self.feed_text[:15]+"..."
+
+class Chat(models.Model):
+    chat_recipients = models.ManyToManyField(settings.AUTH_USER_MODEL, verbose_name="Chat Recipients", related_name="chats")
+    last_message_user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Last Message Sender", on_delete=models.CASCADE)
+    last_message_text = models.CharField(max_length=500)
+    last_message_time = models.DateTimeField(auto_now=True)
+    last_message_seen = models.BooleanField()
+
+    def __str__(self):
+        return ", ".join([x.username for x in self.chat_recipients.all()])
+
+class Message(models.Model):
+    message_user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Message Sender", on_delete=models.CASCADE)
+    message_text = models.CharField(max_length=500)
+    message_time = models.DateTimeField(auto_now_add=True)
+    message_chat = models.ForeignKey(Chat, verbose_name="Chat", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return ", ".join([x.username for x in self.message_chat.chat_recipients.all()]) + ": " + self.message_text[:15]+"..."
