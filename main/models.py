@@ -183,7 +183,7 @@ class UploadFile(models.Model):
 
 class UploadFeed(models.Model):
     def user_directory_path(instance, filename):
-        return f"upload/feed/{instance.feed_user}/{filename}"
+        return f"feed/{instance.feed_user}/{filename}"
 
     feed_text = models.CharField(max_length=5000)
     feed_date = models.DateTimeField(auto_now_add=True)
@@ -231,3 +231,20 @@ class Message(models.Model):
 
     def __str__(self):
         return ", ".join([x.username for x in self.message_chat.chat_recipients.all()]) + ": " + self.message_text[:15]+"..."
+
+class Notification(models.Model):
+    def user_directory_path(instance, filename):
+        return f"notifications/{filename}"
+
+    notif_title = models.CharField(max_length=500)
+    notif_text = models.CharField(max_length=5000)
+    notif_time = models.DateTimeField(auto_now_add=True)
+    notif_file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+
+    def delete(self, *args, **kwargs):
+        if self.notif_file:
+            self.notif_file.storage.delete(self.notif_file.name)
+        super(Notification, self).delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.notif_title

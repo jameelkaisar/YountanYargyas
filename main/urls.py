@@ -42,6 +42,7 @@ urlpatterns = [
     path("student-feed/posts", views.sf_posts, name="sf_posts"),
     path("messages/", views.messages_section, name="messages_section"),
     path("messages/<slug:username_slug>", views.messages_chat, name="messages_chat"),
+    path("notifications/", views.notifications, name="notifications"),
     path("classes/", views.student_classes, name="student_classes"),
     path("classes/<slug:class_slug>", views.student_class, name="student_class"),
     path("classes/<slug:class_slug>/<slug:subject_slug>", views.student_subject, name="student_subject"),

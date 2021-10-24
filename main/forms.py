@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Notification
 from tinymce.widgets import TinyMCE
 
 class MyRegistrationForm(UserCreationForm):
@@ -91,28 +91,28 @@ class EditClass(forms.Form):
     data_type = forms.CharField(widget=forms.HiddenInput())
     data_next = forms.CharField(widget=forms.HiddenInput())
     student_class = forms.CharField(label="Class Name", max_length=100)
-    class_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Class Summary")
+    class_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Class Summary", max_length=500)
 
 class EditSubject(forms.Form):
     data_id = forms.CharField(widget=forms.HiddenInput())
     data_type = forms.CharField(widget=forms.HiddenInput())
     data_next = forms.CharField(widget=forms.HiddenInput())
     student_subject = forms.CharField(label="Subject Name", max_length=100)
-    subject_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Subject Summary")
+    subject_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Subject Summary", max_length=500)
 
 class EditChapter(forms.Form):
     data_id = forms.CharField(widget=forms.HiddenInput())
     data_type = forms.CharField(widget=forms.HiddenInput())
     data_next = forms.CharField(widget=forms.HiddenInput())
     student_chapter = forms.CharField(label="Chapter Name", max_length=100)
-    chapter_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Chapter Summary")
+    chapter_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Chapter Summary", max_length=500)
 
 class EditSection(forms.Form):
     data_id = forms.CharField(widget=forms.HiddenInput())
     data_type = forms.CharField(widget=forms.HiddenInput())
     data_next = forms.CharField(widget=forms.HiddenInput())
     student_section = forms.CharField(label="Section Name", max_length=100)
-    section_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Section Summary")
+    section_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Section Summary", max_length=500)
     section_text = forms.CharField(widget=TinyMCE(), label="Section Text")
 
 class EditImage(forms.Form):
@@ -120,28 +120,28 @@ class EditImage(forms.Form):
     data_type = forms.CharField(widget=forms.HiddenInput())
     data_next = forms.CharField(widget=forms.HiddenInput())
     image_name = forms.CharField(label="Image Name", max_length=100)
-    image_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Image Summary")
+    image_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Image Summary", max_length=500)
 
 class EditVideo(forms.Form):
     data_id = forms.CharField(widget=forms.HiddenInput())
     data_type = forms.CharField(widget=forms.HiddenInput())
     data_next = forms.CharField(widget=forms.HiddenInput())
     video_name = forms.CharField(label="Video Name", max_length=100)
-    video_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Video Summary")
+    video_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Video Summary", max_length=500)
 
 class EditAudio(forms.Form):
     data_id = forms.CharField(widget=forms.HiddenInput())
     data_type = forms.CharField(widget=forms.HiddenInput())
     data_next = forms.CharField(widget=forms.HiddenInput())
     audio_name = forms.CharField(label="Audio Name", max_length=100)
-    audio_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Audio Summary")
+    audio_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Audio Summary", max_length=500)
 
 class EditFile(forms.Form):
     data_id = forms.CharField(widget=forms.HiddenInput())
     data_type = forms.CharField(widget=forms.HiddenInput())
     data_next = forms.CharField(widget=forms.HiddenInput())
     file_name = forms.CharField(label="File Name", max_length=100)
-    file_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="File Summary")
+    file_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="File Summary", max_length=500)
 
 class EditFeed(forms.Form):
     data_id = forms.CharField(widget=forms.HiddenInput())
@@ -156,3 +156,17 @@ class NewChat(forms.Form):
 class NewMessage(forms.Form):
     chat_recipient = forms.CharField(widget=forms.HiddenInput())
     message_text = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Message", max_length=500)
+
+class AddNotification(forms.ModelForm):
+    class Meta:
+        model = Notification
+        fields = ["notif_title", "notif_text", "notif_file"]
+        labels = {"notif_title": "Title", "notif_text": "Text", "notif_file": ""}
+        widgets = {"notif_text": forms.Textarea(attrs={"class": "materialize-textarea"}), "notif_file": forms.FileInput(attrs={"style": "display: none;"})}
+
+class EditNotification(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    notif_title = forms.CharField(label="Title", max_length=500)
+    notif_text = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Text", max_length=5000)

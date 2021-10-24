@@ -28,7 +28,7 @@
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <p><label style="margin-right: 25px;">File:</label><label for="id_feed_file" class="btn">Choose File</label></p>
+                    <p><label style="margin-right: 25px;">File (Optional):</label><label for="id_feed_file" class="btn">Choose File</label></p>
                     <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Post</button></p>
                 </form>
             </div>

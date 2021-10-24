@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message, Notification
 from django.http import HttpResponse
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash, get_user_model
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
-from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddImage, AddVideo, AddAudio, AddFile, AddFeed, EditClass, EditSubject, EditChapter, EditSection, EditImage, EditVideo, EditAudio, EditFile, EditFeed, NewChat, NewMessage
+from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddImage, AddVideo, AddAudio, AddFile, AddFeed, EditClass, EditSubject, EditChapter, EditSection, EditImage, EditVideo, EditAudio, EditFile, EditFeed, NewChat, NewMessage, AddNotification, EditNotification
 from django.core.paginator import Paginator
 from django.utils.text import slugify
 
@@ -468,6 +468,29 @@ def messages_chat(request, username_slug):
         messages.error(request, "You must be logged in to view this page!")
         return redirect(f"/login?next={request.get_full_path()}")
 
+def notifications(request):
+    if request.method == "POST":
+        form = AddNotification(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.info(request, "Notification Added Successfully!")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, error)
+        return redirect("main:notifications")
+
+    form = AddNotification()
+    notifications = Notification.objects.all().order_by('-notif_time')
+    page_notifications = Paginator(notifications, 12)
+    page_number = request.GET.get('page')
+    page_obj = page_notifications.get_page(page_number)
+    return render(
+        request=request,
+        template_name="main/notifications.html",
+        context={"title": "Notifications", "editor": is_editor(request.user), "page_obj": page_obj, "form": form, "next": request.get_full_path()}
+        )
+
 def student_classes(request):
     if request.method == "POST":
         form = AddClass(request.POST)
@@ -745,6 +768,20 @@ def delete_data(request):
                     if instance.feed_user == request.user or is_editor(request.user):
                         instance.delete()
                         messages.info(request, "Post Deleted Successfully!")
+                        if request.POST.get('data_next'):
+                            return redirect(request.POST.get('data_next'))
+                        else:
+                            return redirect("main:homepage")
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "notif":
+                try:
+                    instance = Notification.objects.get(id=request.POST.get('data_id'))
+                    if is_editor(request.user):
+                        instance.delete()
+                        messages.info(request, "Notification Deleted Successfully!")
                         if request.POST.get('data_next'):
                             return redirect(request.POST.get('data_next'))
                         else:
@@ -1104,6 +1141,39 @@ def edit_data(request):
                             messages.info(request, "Post Edited Successfully!")
                         except:
                             messages.error(request, "Error while saving the post!")
+                        if request.POST.get('data_next'):
+                            return redirect(request.POST.get('data_next'))
+                        else:
+                            return redirect("main:homepage")
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "notif":
+                try:
+                    instance = Notification.objects.get(id=request.POST.get('data_id'))
+                    if is_editor(request.user):
+                        form = EditNotification(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "notif_title": instance.notif_title, "notif_text": instance.notif_text})
+                        return render(
+                            request=request,
+                            template_name="main/edit-data.html",
+                            context={"title": "Edit Notification", "form": form}
+                            )
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-notif":
+                try:
+                    instance = Notification.objects.get(id=request.POST.get('data_id'))
+                    if is_editor(request.user):
+                        instance.notif_title = request.POST.get('notif_title')
+                        instance.notif_text = request.POST.get('notif_text')
+                        try:
+                            instance.save()
+                            messages.info(request, "Notification Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the notification!")
                         if request.POST.get('data_next'):
                             return redirect(request.POST.get('data_next'))
                         else:
