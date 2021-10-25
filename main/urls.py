@@ -30,6 +30,7 @@ urlpatterns = [
     path("change-password/", views.change_password, name="change_password"),
     path("logout/", views.logout_request, name="logout"),
     path("profile/", views.profile, name="profile"),
+    path("admin/", views.admin_section, name="admin_section"),
     path("upload/", views.upload, name="upload"),
     path("upload/images", views.upload_images, name="upload_images"),
     path("upload/videos", views.upload_videos, name="upload_videos"),

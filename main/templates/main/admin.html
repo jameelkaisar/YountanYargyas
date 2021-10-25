@@ -1,0 +1,61 @@
+{% extends "main/includes/header.html" %}
+
+{% block content %}
+    <div class="z-depth-1">
+        <ul class="breadcrumbs">
+            <li><a href="/">Home</a></li>
+            <li><b>Admin Section</b></li>
+        </ul>
+    </div>
+
+    <ul class="collapsible">
+        <li>
+            <div class="collapsible-header"><i class="material-icons">verified_user</i>Manage Teachers</div>
+            <div class="collapsible-body">
+                <p>
+                    Manage Teachers
+                </p>
+            </div>
+        </li>
+        <li>
+            <div class="collapsible-header"><i class="material-icons">person</i>Manage Users</div>
+            <div class="collapsible-body">
+                <p>
+                    Manage Users
+                </p>
+            </div>
+        </li>
+        <li>
+            <div class="collapsible-header"><i class="material-icons">cloud_done</i>Manage Database</div>
+            <div class="collapsible-body">
+                <p>
+                    Manage Database
+                    <br><br>
+                    Take Full Backup (Recommended)
+                    <br>
+                    Take Partial Backup (excluding images, videos and other static files)
+                    <br>
+                    Clear Database (Warning) (Wait (30s) before displaying button in pop-up window)
+                </p>
+            </div>
+        </li>
+        <li>
+            <div class="collapsible-header"><i class="material-icons">help</i>Help Videos</div>
+            <div class="collapsible-body">
+                <p>
+                    Help Videos
+                </p>
+            </div>
+        </li>
+        <li>
+            <div class="collapsible-header"><i class="material-icons">device_hub</i>Django Admin Panel</div>
+            <div class="collapsible-body">
+                <p>
+                    <div align="center">
+                        <a href="/admin/django" class="btn orange darken-4"><i class="material-icons left">device_hub</i>View Django Admin Panel</a>
+                    </div>
+                </p>
+            </div>
+        </li>
+    </ul>
+{% endblock %}

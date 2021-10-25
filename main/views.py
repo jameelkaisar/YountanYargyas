@@ -153,6 +153,21 @@ def profile(request):
         messages.error(request, "You must be logged in to view this page!")
         return redirect(f"/login?next={request.get_full_path()}")
 
+def admin_section(request):
+    if request.user.is_authenticated:
+        if request.user.is_superuser:
+            return render(
+                request=request,
+                template_name="main/admin.html",
+                context={"title": "Admin Section"}
+                )
+        else:
+            messages.error(request, "You need to have superuser privileges to view this page!")
+            return redirect("main:homepage")
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect(f"/login?next={request.get_full_path()}")
+
 def upload(request):
     if request.user.is_authenticated:
         return redirect("main:upload_images")
