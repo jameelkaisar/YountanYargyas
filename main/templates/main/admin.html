@@ -80,6 +80,77 @@
                 </p>
             </div>
         </li>
+        <li class="{% if open == 'mm' %}active{% endif %}">
+            <div class="collapsible-header"><i class="material-icons">verified_user</i>Manage Monitors</div>
+            <div class="collapsible-body">
+                <p>
+                    <div class="card card-panel grey lighten-5 z-depth-1">
+                        {% for m in page_obj_monitors %}
+                            <p>
+                                <a href="/student-feed/profiles/{{ m.username }}" style="color: inherit; text-decoration: inherit;">
+                                    <b>{{ m.username }}</b>
+                                </a>
+                                [ <a href="#modalmm{{ forloop.counter }}"  class="modal-trigger">Demote as Monitor</a> ]
+                            </p>
+                            <div id="modalmm{{ forloop.counter }}" class="modal">
+                                <div class="modal-content">
+                                    <h4>Confirmation</h4>
+                                    <p>Are you sure you want to demote {{ m.username }} as monitor?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <form method="POST" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="data_type" value="mm">
+                                        <input type="hidden" name="data_id" value="{{ m.id }}">
+                                        <input type="hidden" name="data_act" value="0">
+                                        <input type="hidden" name="data_page" value="{{ page_obj_monitors.number }}">
+                                        <button type="submit" class="waves-effect waves-red btn-flat">Yes</button>
+                                    </form>
+                                    <button href="#!" class="modal-close waves-effect waves-green btn-flat">No</button>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div align="center">
+                                <span class="card-title"><b>This section is empty!</b></span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if page_obj_monitors %}
+                        <div align="center">
+                            <ul class="pagination">
+                                {% if page_obj_monitors.has_previous %}
+                                    <li class="waves-effect"><a href="?open=mm&page=1"><i class="material-icons">first_page</i></a></li>
+                                    <li class="waves-effect"><a href="?open=mm&page={{ page_obj_monitors.previous_page_number }}"><i class="material-icons">chevron_left</i></a></li>
+                                {% else %}
+                                    <li class="disabled"><a><i class="material-icons">first_page</i></a></li>
+                                    <li class="disabled"><a><i class="material-icons">chevron_left</i></a></li>
+                                {% endif %}
+                                {% if page_obj_monitors.number|add:'-2' > 0 %}
+                                    <li class="waves-effect"><a href="?open=mm&page={{ page_obj_monitors.number|add:'-2' }}">{{ page_obj_monitors.number|add:'-2' }}</a></li>
+                                {% endif %}
+                                {% if page_obj_monitors.number|add:'-1' > 0 %}
+                                    <li class="waves-effect"><a href="?open=mm&page={{ page_obj_monitors.number|add:'-1' }}">{{ page_obj_monitors.number|add:'-1' }}</a></li>
+                                {% endif %}
+                                <li class="active"><a>{{ page_obj_monitors.number }}</a></li>
+                                {% if page_obj_monitors.number|add:'1' <= page_obj_monitors.paginator.num_pages %}
+                                    <li class="waves-effect"><a href="?open=mm&page={{ page_obj_monitors.number|add:'1' }}">{{ page_obj_monitors.number|add:'1' }}</a></li>
+                                {% endif %}
+                                {% if page_obj_monitors.number|add:'2' <= page_obj_monitors.paginator.num_pages %}
+                                    <li class="waves-effect"><a href="?open=mm&page={{ page_obj_monitors.number|add:'2' }}">{{ page_obj_monitors.number|add:'2' }}</a></li>
+                                {% endif %}
+                                {% if page_obj_monitors.has_next %}
+                                    <li class="waves-effect"><a href="?open=mm&page={{ page_obj_monitors.next_page_number }}"><i class="material-icons">chevron_right</i></a></li>
+                                    <li class="waves-effect"><a href="?open=mm&page={{ page_obj_monitors.paginator.num_pages }}"><i class="material-icons">last_page</i></a></li>
+                                {% else %}
+                                    <li class="disabled"><a><i class="material-icons">chevron_right</i></a></li>
+                                    <li class="disabled"><a><i class="material-icons">last_page</i></a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </p>
+            </div>
+        </li>
         <li class="{% if open == 'mu' %}active{% endif %}">
             <div class="collapsible-header"><i class="material-icons">person</i>Manage Users</div>
             <div class="collapsible-body">
@@ -90,9 +161,10 @@
                                 <a href="/student-feed/profiles/{{ u.username }}" style="color: inherit; text-decoration: inherit;">
                                     <b>{{ u.username }}</b>
                                 </a>
-                                [ <a href="#modalmu{{ forloop.counter }}"  class="modal-trigger">{% if teacher_group in u.groups.all %}Demote as Teacher{% else %}Promote to Teacher{% endif %}</a> ]
+                                [ <a href="#modalmu1{{ forloop.counter }}"  class="modal-trigger">{% if teacher_group in u.groups.all %}Demote as Teacher{% else %}Promote to Teacher{% endif %}</a> ]
+                                [ <a href="#modalmu2{{ forloop.counter }}"  class="modal-trigger">{% if monitor_group in u.groups.all %}Demote as Monitor{% else %}Promote to Monitor{% endif %}</a> ]
                             </p>
-                            <div id="modalmu{{ forloop.counter }}" class="modal">
+                            <div id="modalmu1{{ forloop.counter }}" class="modal">
                                 <div class="modal-content">
                                     <h4>Confirmation</h4>
                                     <p>{% if teacher_group in u.groups.all %}Are you sure you want to demote {{ u.username }} as teacher?{% else %}Are you sure you want to promote {{ u.username }} to teacher?{% endif %}</p>
@@ -103,6 +175,23 @@
                                         <input type="hidden" name="data_type" value="mu">
                                         <input type="hidden" name="data_id" value="{{ u.id }}">
                                         <input type="hidden" name="data_act" value="{% if teacher_group in u.groups.all %}0{% else %}1{% endif %}">
+                                        <input type="hidden" name="data_page" value="{{ page_obj_users.number }}">
+                                        <button type="submit" class="waves-effect waves-red btn-flat">Yes</button>
+                                    </form>
+                                    <button href="#!" class="modal-close waves-effect waves-green btn-flat">No</button>
+                                </div>
+                            </div>
+                            <div id="modalmu2{{ forloop.counter }}" class="modal">
+                                <div class="modal-content">
+                                    <h4>Confirmation</h4>
+                                    <p>{% if monitor_group in u.groups.all %}Are you sure you want to demote {{ u.username }} as monitor?{% else %}Are you sure you want to promote {{ u.username }} to monitor?{% endif %}</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <form method="POST" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="data_type" value="mu">
+                                        <input type="hidden" name="data_id" value="{{ u.id }}">
+                                        <input type="hidden" name="data_act" value="{% if monitor_group in u.groups.all %}2{% else %}3{% endif %}">
                                         <input type="hidden" name="data_page" value="{{ page_obj_users.number }}">
                                         <button type="submit" class="waves-effect waves-red btn-flat">Yes</button>
                                     </form>
@@ -291,7 +380,7 @@
             <div class="collapsible-body">
                 <p>
                     <div align="center">
-                        <a href="/admin/django" class="btn orange darken-4"><i class="material-icons left">device_hub</i>View Django Admin Panel</a>
+                        <a href="/admin/django" target="_blank" class="btn orange darken-4"><i class="material-icons left">device_hub</i>View Django Admin Panel</a>
                     </div>
                 </p>
             </div>

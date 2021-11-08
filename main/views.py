@@ -179,6 +179,18 @@ def admin_section(request):
                             return redirect("main:homepage")
                     except:
                         return redirect("main:homepage")
+                elif request.POST.get('data_type') == "mm":
+                    try:
+                        if request.POST.get('data_act') == "0":
+                            user_obj = User.objects.get(id=request.POST.get('data_id'))
+                            group_obj = Group.objects.get(name='monitor')
+                            group_obj.user_set.remove(user_obj)
+                            messages.info(request, f"{user_obj.username} demoted as monitor!")
+                            return redirect(f"/admin/?open=mm&page={request.POST.get('data_page')}")
+                        else:
+                            return redirect("main:homepage")
+                    except:
+                        return redirect("main:homepage")
                 elif request.POST.get('data_type') == "mu":
                     try:
                         if request.POST.get('data_act') == "0":
@@ -192,6 +204,18 @@ def admin_section(request):
                             group_obj = Group.objects.get(name='teacher')
                             group_obj.user_set.add(user_obj)
                             messages.info(request, f"{user_obj.username} promoted to teacher!")
+                            return redirect(f"/admin/?open=mu&page={request.POST.get('data_page')}")
+                        elif request.POST.get('data_act') == "2":
+                            user_obj = User.objects.get(id=request.POST.get('data_id'))
+                            group_obj = Group.objects.get(name='monitor')
+                            group_obj.user_set.remove(user_obj)
+                            messages.info(request, f"{user_obj.username} demoted as monitor!")
+                            return redirect(f"/admin/?open=mu&page={request.POST.get('data_page')}")
+                        elif request.POST.get('data_act') == "3":
+                            user_obj = User.objects.get(id=request.POST.get('data_id'))
+                            group_obj = Group.objects.get(name='monitor')
+                            group_obj.user_set.add(user_obj)
+                            messages.info(request, f"{user_obj.username} promoted to monitor!")
                             return redirect(f"/admin/?open=mu&page={request.POST.get('data_page')}")
                         else:
                             return redirect("main:homepage")
@@ -277,6 +301,15 @@ def admin_section(request):
             else:
                 page_obj_teachers = page_teachers.get_page(1)
 
+            monitor_group = Group.objects.get(name='monitor')
+            monitors = monitor_group.user_set.order_by('username')
+            page_monitors = Paginator(monitors, 20)
+            if request.GET.get('open') == "mm":
+                page_number = request.GET.get('page')
+                page_obj_monitors = page_monitors.get_page(page_number)
+            else:
+                page_obj_monitors = page_monitors.get_page(1)
+
             users = User.objects.order_by('username')
             page_users = Paginator(users, 20)
             if request.GET.get('open') == "mu":
@@ -288,7 +321,7 @@ def admin_section(request):
             return render(
                 request=request,
                 template_name="main/admin.html",
-                context={"title": "Admin Section", "teacher_group": teacher_group, "page_obj_teachers": page_obj_teachers, "page_obj_users": page_obj_users, "open": request.GET.get('open')}
+                context={"title": "Admin Section", "teacher_group": teacher_group, "page_obj_teachers": page_obj_teachers, "monitor_group": monitor_group, "page_obj_monitors": page_obj_monitors, "page_obj_users": page_obj_users, "open": request.GET.get('open')}
                 )
         else:
             messages.error(request, "You need to have superuser privileges to view this page!")

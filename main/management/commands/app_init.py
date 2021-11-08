@@ -26,6 +26,9 @@ class Command(BaseCommand):
             self.stdout.write("\nCreating \"teacher\" Group...")
             Group.objects.get_or_create(name='teacher')
 
+            self.stdout.write("\nCreating \"monitor\" Group...")
+            Group.objects.get_or_create(name='monitor')
+
             self.stdout.write("\nCreating Superuser...")
 
             if options['username'] is not None:
