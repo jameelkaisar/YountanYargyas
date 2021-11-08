@@ -163,6 +163,7 @@
                                 </a>
                                 [ <a href="#modalmu1{{ forloop.counter }}"  class="modal-trigger">{% if teacher_group in u.groups.all %}Demote as Teacher{% else %}Promote to Teacher{% endif %}</a> ]
                                 [ <a href="#modalmu2{{ forloop.counter }}"  class="modal-trigger">{% if monitor_group in u.groups.all %}Demote as Monitor{% else %}Promote to Monitor{% endif %}</a> ]
+                                [ <a href="#modalmu3{{ forloop.counter }}"  class="modal-trigger" style="color: red;">Delete User</a> ]
                             </p>
                             <div id="modalmu1{{ forloop.counter }}" class="modal">
                                 <div class="modal-content">
@@ -192,6 +193,23 @@
                                         <input type="hidden" name="data_type" value="mu">
                                         <input type="hidden" name="data_id" value="{{ u.id }}">
                                         <input type="hidden" name="data_act" value="{% if monitor_group in u.groups.all %}2{% else %}3{% endif %}">
+                                        <input type="hidden" name="data_page" value="{{ page_obj_users.number }}">
+                                        <button type="submit" class="waves-effect waves-red btn-flat">Yes</button>
+                                    </form>
+                                    <button href="#!" class="modal-close waves-effect waves-green btn-flat">No</button>
+                                </div>
+                            </div>
+                            <div id="modalmu3{{ forloop.counter }}" class="modal">
+                                <div class="modal-content">
+                                    <h4>Confirmation</h4>
+                                    <p>Are you sure you want to delete user {{ u.username }}?<br>All the data uploaded by {{ u.username }} will also be deleted.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <form method="POST" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="data_type" value="mu">
+                                        <input type="hidden" name="data_id" value="{{ u.id }}">
+                                        <input type="hidden" name="data_act" value="4">
                                         <input type="hidden" name="data_page" value="{{ page_obj_users.number }}">
                                         <button type="submit" class="waves-effect waves-red btn-flat">Yes</button>
                                     </form>

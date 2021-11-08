@@ -217,6 +217,15 @@ def admin_section(request):
                             group_obj.user_set.add(user_obj)
                             messages.info(request, f"{user_obj.username} promoted to monitor!")
                             return redirect(f"/admin/?open=mu&page={request.POST.get('data_page')}")
+                        elif request.POST.get('data_act') == "4":
+                            user_obj = User.objects.get(id=request.POST.get('data_id'))
+                            user_obj_username = user_obj.username
+                            user_chats = Chat.objects.filter(chat_recipients__in=[user_obj])
+                            for chat in user_chats:
+                                chat.delete()
+                            user_obj.delete()
+                            messages.info(request, f"{user_obj_username} deleted successfully!")
+                            return redirect(f"/admin/?open=mu&page={request.POST.get('data_page')}")
                         else:
                             return redirect("main:homepage")
                     except:
