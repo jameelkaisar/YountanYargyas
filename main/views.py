@@ -546,30 +546,40 @@ def messages_section(request):
     if request.user.is_authenticated:
         if request.method == "POST":
             try:
-                if User.objects.filter(username=request.POST.get('chat_recipient')).exists():
-                    if request.user.username != request.POST.get('chat_recipient'):
-                        recipient = User.objects.get(username=request.POST.get('chat_recipient'))
-                        chats = Chat.objects.filter(chat_recipients__in=[request.user])
-                        if chats.exists() and chats.filter(chat_recipients=recipient).exists():
-                            chat = chats.get(chat_recipients=recipient)
-                            chat.last_message_user = request.user
-                            chat.last_message_text = request.POST.get('message_text')
-                            chat.last_message_seen = False
-                            chat.save()
-                            message = Message(message_user=request.user, message_text=request.POST.get('message_text'), message_chat=chat)
-                            message.save()
-                            return redirect(f"/messages/{request.POST.get('chat_recipient')}")
-                        else:
-                            chat = Chat(last_message_user=request.user, last_message_text=request.POST.get('message_text'), last_message_seen=False)
-                            chat.save()
-                            chat.chat_recipients.add(request.user, User.objects.get(username=request.POST.get('chat_recipient')))
-                            message = Message(message_user=request.user, message_text=request.POST.get('message_text'), message_chat=chat)
-                            message.save()
-                            return redirect(f"/messages/{request.POST.get('chat_recipient')}")
+                if request.POST.get('data_type') == "ms":
+                    if request.POST.get('data_act') == "0":
+                        user_chats = Chat.objects.filter(chat_recipients__in=[request.user])
+                        for chat in user_chats:
+                            chat.delete()
+                        messages.info(request, "Chats deleted successfully!")
+                        return redirect("main:messages_section")
                     else:
-                        messages.error(request, "You can't send a message to yourself!")
+                        return redirect("main:homepage")
                 else:
-                    messages.error(request, "Invalid Username!")
+                    if User.objects.filter(username=request.POST.get('chat_recipient')).exists():
+                        if request.user.username != request.POST.get('chat_recipient'):
+                            recipient = User.objects.get(username=request.POST.get('chat_recipient'))
+                            chats = Chat.objects.filter(chat_recipients__in=[request.user])
+                            if chats.exists() and chats.filter(chat_recipients=recipient).exists():
+                                chat = chats.get(chat_recipients=recipient)
+                                chat.last_message_user = request.user
+                                chat.last_message_text = request.POST.get('message_text')
+                                chat.last_message_seen = False
+                                chat.save()
+                                message = Message(message_user=request.user, message_text=request.POST.get('message_text'), message_chat=chat)
+                                message.save()
+                                return redirect(f"/messages/{request.POST.get('chat_recipient')}")
+                            else:
+                                chat = Chat(last_message_user=request.user, last_message_text=request.POST.get('message_text'), last_message_seen=False)
+                                chat.save()
+                                chat.chat_recipients.add(request.user, User.objects.get(username=request.POST.get('chat_recipient')))
+                                message = Message(message_user=request.user, message_text=request.POST.get('message_text'), message_chat=chat)
+                                message.save()
+                                return redirect(f"/messages/{request.POST.get('chat_recipient')}")
+                        else:
+                            messages.error(request, "You can't send a message to yourself!")
+                    else:
+                        messages.error(request, "Invalid Username!")
             except:
                 return redirect("main:homepage")
             return redirect(request.get_full_path())
@@ -596,31 +606,47 @@ def messages_chat(request, username_slug):
             if request.user.username != username_slug:
                 if request.method == "POST":
                     try:
-                        if User.objects.filter(username=request.POST.get('chat_recipient')).exists():
-                            if request.user.username != request.POST.get('chat_recipient'):
-                                recipient = User.objects.get(username=request.POST.get('chat_recipient'))
-                                chats = Chat.objects.filter(chat_recipients__in=[request.user])
-                                if chats.exists() and chats.filter(chat_recipients=recipient).exists():
-                                    chat = chats.get(chat_recipients=recipient)
-                                    chat.last_message_user = request.user
-                                    chat.last_message_text = request.POST.get('message_text')
-                                    chat.last_message_seen = False
-                                    chat.save()
-                                    message = Message(message_user=request.user, message_text=request.POST.get('message_text'), message_chat=chat)
-                                    message.save()
-                                    return redirect(f"/messages/{username_slug}")
+                        if request.POST.get('data_type') == "mc":
+                            if User.objects.filter(username=request.POST.get('data_un')).exists():
+                                if request.user.username != request.POST.get('data_un'):
+                                    if request.POST.get('data_act') == "0":
+                                        user_obj = User.objects.get(username=request.POST.get('data_un'))
+                                        user_chat = Chat.objects.get(chat_recipients__in=[user_obj])
+                                        user_chat.delete()
+                                        messages.info(request, "Chat deleted successfully!")
+                                        return redirect("main:messages_section")
+                                    else:
+                                        return redirect("main:homepage")
                                 else:
-                                    chat = Chat(last_message_user=request.user, last_message_text=request.POST.get('message_text'), last_message_seen=False)
-                                    chat.save()
-                                    chat.chat_recipients.add(request.user, User.objects.get(username=request.POST.get('chat_recipient')))
-                                    message = Message(message_user=request.user, message_text=request.POST.get('message_text'), message_chat=chat)
-                                    message.save()
-                                    return redirect(f"/messages/{username_slug}")
+                                    return redirect("main:homepage")
                             else:
-                                messages.error(request, "You can't send a message to yourself!")
-                                return redirect("main:messages_section")
+                                return redirect("main:homepage")
                         else:
-                            return redirect("main:homepage")
+                            if User.objects.filter(username=request.POST.get('chat_recipient')).exists():
+                                if request.user.username != request.POST.get('chat_recipient'):
+                                    recipient = User.objects.get(username=request.POST.get('chat_recipient'))
+                                    chats = Chat.objects.filter(chat_recipients__in=[request.user])
+                                    if chats.exists() and chats.filter(chat_recipients=recipient).exists():
+                                        chat = chats.get(chat_recipients=recipient)
+                                        chat.last_message_user = request.user
+                                        chat.last_message_text = request.POST.get('message_text')
+                                        chat.last_message_seen = False
+                                        chat.save()
+                                        message = Message(message_user=request.user, message_text=request.POST.get('message_text'), message_chat=chat)
+                                        message.save()
+                                        return redirect(f"/messages/{username_slug}")
+                                    else:
+                                        chat = Chat(last_message_user=request.user, last_message_text=request.POST.get('message_text'), last_message_seen=False)
+                                        chat.save()
+                                        chat.chat_recipients.add(request.user, User.objects.get(username=request.POST.get('chat_recipient')))
+                                        message = Message(message_user=request.user, message_text=request.POST.get('message_text'), message_chat=chat)
+                                        message.save()
+                                        return redirect(f"/messages/{username_slug}")
+                                else:
+                                    messages.error(request, "You can't send a message to yourself!")
+                                    return redirect("main:messages_section")
+                            else:
+                                return redirect("main:homepage")
                     except:
                         return redirect("main:homepage")
                     return redirect(request.get_full_path())

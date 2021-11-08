@@ -94,4 +94,25 @@
             </ul>
         </div>
     {% endif %}
+
+    {% if page_obj %}
+        <div class="card card-panel grey lighten-5 z-depth-1" align="center">
+            <a href="#modal1" class="modal-trigger btn orange darken-4"><i class="material-icons left">delete</i>Delete All Chats</a>
+        </div>
+        <div id="modal1" class="modal">
+            <div class="modal-content">
+                <h4>Confirmation</h4>
+                <p>Are you sure you want to delete all chats?</p>
+            </div>
+            <div class="modal-footer">
+                <form method="POST" enctype="multipart/form-data" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="data_type" value="ms">
+                    <input type="hidden" name="data_act" value="0">
+                    <button type="submit" class="waves-effect waves-red btn-flat">Yes</button>
+                </form>
+                <button href="#!" class="modal-close waves-effect waves-green btn-flat">No</button>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
