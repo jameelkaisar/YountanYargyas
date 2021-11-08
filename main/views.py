@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message, Notification
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message, Notification
 from django.http import HttpResponse
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash, get_user_model
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
-from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddImage, AddVideo, AddAudio, AddFile, AddFeed, EditClass, EditSubject, EditChapter, EditSection, EditImage, EditVideo, EditAudio, EditFile, EditFeed, NewChat, NewMessage, AddNotification, EditNotification
+from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddCategory, AddContent, AddImage, AddVideo, AddAudio, AddFile, AddFeed, EditClass, EditSubject, EditChapter, EditSection, EditStudentCategory, EditStudentContent, EditImage, EditVideo, EditAudio, EditFile, EditFeed, NewChat, NewMessage, AddNotification, EditNotification
 from django.core.paginator import Paginator
 from django.utils.text import slugify
 from django.core.management import call_command
@@ -17,6 +17,12 @@ from shutil import copytree
 def is_editor(user):
     if user.is_authenticated:
         if user.is_superuser or "teacher" in [g.name for g in user.groups.all()]:
+            return True
+    return False
+
+def is_monitor(user):
+    if user.is_authenticated:
+        if user.is_superuser or "teacher" in [g.name for g in user.groups.all()] or "monitor" in [g.name for g in user.groups.all()]:
             return True
     return False
 
@@ -789,6 +795,58 @@ def student_section(request, class_slug, subject_slug, chapter_slug, section_slu
         messages.error(request, f"{class_slug} class is not present!")
         return redirect("main:student_classes")
 
+def student_categories(request):
+    if request.method == "POST":
+        form = AddCategory(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.info(request, "Category Added Successfully!")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, error)
+        return redirect(request.get_full_path())
+
+    form = AddCategory()
+    return render(
+        request=request,
+        template_name="main/student-categories.html",
+        context={"title": "Categories", "monitor": is_monitor(request.user), "student_categories": reversed(StudentCategory.objects.all()), "form": form, "next": request.get_full_path()}
+        )
+
+def student_content(request, category_slug):
+    category_slugs = [c.category_slug for c in StudentCategory.objects.all()]
+    if category_slug in category_slugs:
+        category_slug_name = StudentCategory.objects.filter(category_slug=category_slug)[0].student_category
+        matching_content = StudentContent.objects.filter(content_category__category_slug=category_slug)
+
+        if request.method == "POST":
+            form = AddContent(request.POST, request.FILES)
+            if form.is_valid():
+                form_instance = form.save(commit=False)
+                form_instance.content_user = request.user
+                form.save()
+                messages.info(request, "Content Added Successfully!")
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, error)
+            return redirect(request.get_full_path())
+
+        form = AddContent(initial={"content_category": StudentCategory.objects.filter(category_slug=category_slug)[0]})
+        content = matching_content.order_by('-content_time')
+        page_content = Paginator(content, 12)
+        page_number = request.GET.get('page')
+        page_obj = page_content.get_page(page_number)
+        return render(
+            request=request,
+            template_name="main/student-content.html",
+            context={"title": category_slug_name, "monitor": is_monitor(request.user), "page_obj": page_obj, "category_slug": category_slug, "category_slug_name": category_slug_name, "form": form, "next": request.get_full_path()}
+            )
+    else:
+        messages.error(request, f"{category_slug} category is not present!")
+        return redirect("main:student_categories")
+
 def delete_data(request):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -852,6 +910,34 @@ def delete_data(request):
                         messages.info(request, "Class Deleted Successfully!")
                     if request.POST.get('data_next'):
                         return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "student-category" and is_monitor(request.user):
+                try:
+                    if StudentContent.objects.filter(content_category=request.POST.get('data_id')).count():
+                        messages.error(request, "Non-empty Categories can't be Deleted!")
+                    else:
+                        instance = StudentCategory.objects.get(id=request.POST.get('data_id'))
+                        instance.delete()
+                        messages.info(request, "Category Deleted Successfully!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "student-content":
+                try:
+                    instance = StudentContent.objects.get(id=request.POST.get('data_id'))
+                    if instance.content_user == request.user or is_monitor(request.user):
+                        instance.delete()
+                        messages.info(request, "Content Deleted Successfully!")
+                        if request.POST.get('data_next'):
+                            return redirect(request.POST.get('data_next'))
+                        else:
+                            return redirect("main:homepage")
                     else:
                         return redirect("main:homepage")
                 except:
@@ -1143,6 +1229,80 @@ def edit_data(request):
                                 messages.error(request, "Error while saving the class!")
                     if request.POST.get('data_next'):
                         return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "student-category" and is_monitor(request.user):
+                try:
+                    instance = StudentCategory.objects.get(id=request.POST.get('data_id'))
+                    form = EditStudentCategory(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "student_category": instance.student_category, "category_summary": instance.category_summary})
+                    return render(
+                        request=request,
+                        template_name="main/edit-data.html",
+                        context={"title": "Edit Category", "form": form}
+                        )
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-student-category" and is_monitor(request.user):
+                try:
+                    instance = StudentCategory.objects.get(id=request.POST.get('data_id'))
+                    instance.student_category = request.POST.get('student_category')
+                    instance.category_summary = request.POST.get('category_summary')
+                    if instance.category_slug == slugify(instance.student_category):
+                        try:
+                            instance.save()
+                            messages.info(request, "Category Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the category!")
+                    else:
+                        current_categories = StudentCategory.objects.all()
+                        for current_category in current_categories:
+                            if current_category.category_slug == slugify(instance.student_category):
+                                messages.error(request, f'Category with name \"{instance.student_category}\" already exists.')
+                                break
+                        else:
+                            instance.category_slug = slugify(instance.student_category)
+                            try:
+                                instance.save()
+                                messages.info(request, "Category Edited Successfully!")
+                            except:
+                                messages.error(request, "Error while saving the category!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "student-content":
+                try:
+                    instance = StudentContent.objects.get(id=request.POST.get('data_id'))
+                    if instance.content_user == request.user:
+                        form = EditStudentContent(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "student_content": instance.student_content, "content_text": instance.content_text})
+                        return render(
+                            request=request,
+                            template_name="main/edit-data.html",
+                            context={"title": "Edit Content", "form": form}
+                            )
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-student-content":
+                try:
+                    instance = StudentContent.objects.get(id=request.POST.get('data_id'))
+                    if instance.content_user == request.user:
+                        instance.student_content = request.POST.get('student_content')
+                        instance.content_text = request.POST.get('content_text')
+                        try:
+                            instance.save()
+                            messages.info(request, "Content Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the content!")
+                        if request.POST.get('data_next'):
+                            return redirect(request.POST.get('data_next'))
+                        else:
+                            return redirect("main:homepage")
                     else:
                         return redirect("main:homepage")
                 except:

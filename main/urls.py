@@ -49,6 +49,8 @@ urlpatterns = [
     path("classes/<slug:class_slug>/<slug:subject_slug>", views.student_subject, name="student_subject"),
     path("classes/<slug:class_slug>/<slug:subject_slug>/<slug:chapter_slug>", views.student_chapter, name="student_chapter"),
     path("classes/<slug:class_slug>/<slug:subject_slug>/<slug:chapter_slug>/<slug:section_slug>", views.student_section, name="student_section"),
+    path("student/", views.student_categories, name="student_categories"),
+    path("student/<slug:category_slug>", views.student_content, name="student_content"),
     path("delete-data", views.delete_data, name="delete_data"),
     path("edit-data", views.edit_data, name="edit_data"),
 ]

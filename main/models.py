@@ -101,6 +101,68 @@ class StudentSection(models.Model):
     def __str__(self):
         return self.student_section
 
+class StudentCategory(models.Model):
+    def user_directory_path(instance, filename):
+        return f"student/content/{slugify(instance.category_slug)}/{instance.category_slug}.{filename.split('.')[-1]}"
+
+    student_category = models.CharField(max_length=100)
+    category_summary = models.CharField(max_length=500)
+    category_slug = models.SlugField(max_length=100)
+
+    category_image = models.FileField(upload_to=user_directory_path)
+
+    class Meta:
+        verbose_name_plural = "Categories"
+
+    def validate_unique(self, *args, **kwargs):
+        self.category_slug = slugify(self.student_category)
+        super(StudentCategory, self).validate_unique(*args, **kwargs)
+        if self.__class__.objects.filter(category_slug=self.category_slug).exists():
+            raise ValidationError(message=f"Category with name \"{self.student_category}\" already exists.",
+                                  code='unique_together',)
+
+    def delete(self, *args, **kwargs):
+        if self.category_image:
+            self.category_image.storage.delete(self.category_image.name)
+        super(StudentCategory, self).delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.student_category
+
+class StudentContent(models.Model):
+    def user_directory_path(instance, filename):
+        return f"student/content/{instance.content_category.category_slug}/{slugify(instance.student_content)}.{filename.split('.')[-1]}"
+
+    student_content = models.CharField(max_length=100)
+    content_text = models.TextField()
+    content_time = models.DateTimeField(auto_now_add=True)
+    content_file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+
+    content_user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="User", on_delete=models.CASCADE)
+    content_category = models.ForeignKey(StudentCategory, verbose_name="Category", on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "Content"
+
+    def file_type(self):
+        name, extension = splitext(self.content_file.name.lower())
+        if extension in ['.apng', '.avif', '.gif', '.jpg', '.jpeg', '.jfif', '.pjpeg', '.pjp', '.png', '.svg', '.webp']:
+            return 'image'
+        elif extension in ['.mp4', 'webm']:
+            return 'video'
+        elif extension in ['.mp3', '.wav', '.ogg', '.m4a']:
+            return 'audio'
+        else:
+            return 'file'
+
+    def delete(self, *args, **kwargs):
+        if self.content_file:
+            self.content_file.storage.delete(self.content_file.name)
+        super(StudentContent, self).delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.student_content
+
 class UploadImage(models.Model):
     def user_directory_path(instance, filename):
         return f"upload/images/{slugify(instance.image_name)}.{filename.split('.')[-1]}"

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message, Notification
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message, Notification
 from django.db import models
 from tinymce.widgets import TinyMCE
 
@@ -15,10 +15,16 @@ from tinymce.widgets import TinyMCE
 class StudentSectionAdmin(admin.ModelAdmin):
    formfield_overrides = {models.TextField: {'widget': TinyMCE()}}
 
+class StudentContentAdmin(admin.ModelAdmin):
+   formfield_overrides = {models.TextField: {'widget': TinyMCE()}}
+
 admin.site.register(StudentClass)
 admin.site.register(StudentSubject)
 admin.site.register(StudentChapter)
 admin.site.register(StudentSection, StudentSectionAdmin)
+
+admin.site.register(StudentCategory)
+admin.site.register(StudentContent, StudentContentAdmin)
 
 admin.site.register(UploadImage)
 admin.site.register(UploadVideo)

@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Notification
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Notification
 from tinymce.widgets import TinyMCE
 
 class MyRegistrationForm(UserCreationForm):
@@ -50,6 +50,20 @@ class AddSection(forms.ModelForm):
         fields = ["student_section", "section_summary", "section_video", "section_text", "student_chapter"]
         labels = {"student_section": "Section Name", "section_summary": "Section Summary", "section_video": "", "section_text": "Section Text", "student_chapter": "Student Chapter (FK)"}
         widgets = {"section_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "section_video": forms.FileInput(attrs={"style": "display: none;", "accept": "video/*"}), "section_text": TinyMCE(), "student_chapter": forms.HiddenInput()}
+
+class AddCategory(forms.ModelForm):
+    class Meta:
+        model = StudentCategory
+        fields = ["student_category", "category_summary", "category_image"]
+        labels = {"student_category": "Category Name", "category_summary": "Category Summary", "category_image": ""}
+        widgets = {"category_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "category_image": forms.FileInput(attrs={"style": "display: none;", "accept": "image/*"})}
+
+class AddContent(forms.ModelForm):
+    class Meta:
+        model = StudentContent
+        fields = ["student_content", "content_text", "content_file", "content_category"]
+        labels = {"student_content": "Content Title", "content_text": "Content Text", "content_file": "", "content_category": "Content Category (FK)"}
+        widgets = {"content_text": TinyMCE(), "content_file": forms.FileInput(attrs={"style": "display: none;"}), "content_category": forms.HiddenInput()}
 
 class AddImage(forms.ModelForm):
     class Meta:
@@ -114,6 +128,20 @@ class EditSection(forms.Form):
     student_section = forms.CharField(label="Section Name", max_length=100)
     section_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Section Summary", max_length=500)
     section_text = forms.CharField(widget=TinyMCE(), label="Section Text")
+
+class EditStudentCategory(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    student_category = forms.CharField(label="Category Name", max_length=100)
+    category_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Category Summary", max_length=500)
+
+class EditStudentContent(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    student_content = forms.CharField(label="Category Name", max_length=100)
+    content_text = forms.CharField(widget=TinyMCE(), label="Content Text")
 
 class EditImage(forms.Form):
     data_id = forms.CharField(widget=forms.HiddenInput())
