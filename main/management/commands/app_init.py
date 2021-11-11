@@ -5,7 +5,7 @@ from django.core.management import call_command
 from django.contrib.auth.password_validation import validate_password
 
 class Command(BaseCommand):
-    help = "Initialize the app. Create superuser, teacher group."
+    help = "Initialize the app. Create superuser, teacher group, monitor group."
 
     def add_arguments(self, parser):
         parser.add_argument('--username', default=None)
