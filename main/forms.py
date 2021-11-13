@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Notification
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Notification, HelpSection
 from tinymce.widgets import TinyMCE
 
 class MyRegistrationForm(UserCreationForm):
@@ -198,3 +198,17 @@ class EditNotification(forms.Form):
     data_next = forms.CharField(widget=forms.HiddenInput())
     notif_title = forms.CharField(label="Title", max_length=500)
     notif_text = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Text", max_length=5000)
+
+class AddHelpSection(forms.ModelForm):
+    class Meta:
+        model = HelpSection
+        fields = ["help_title", "help_text", "help_video"]
+        labels = {"help_title": "Title", "help_text": "Text", "help_video": ""}
+        widgets = {"help_text": forms.Textarea(attrs={"class": "materialize-textarea"}), "help_video": forms.FileInput(attrs={"style": "display: none;", "accept": "video/*"})}
+
+class EditHelpSection(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    help_title = forms.CharField(label="Title", max_length=500)
+    help_text = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Text", max_length=5000)

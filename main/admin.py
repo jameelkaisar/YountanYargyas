@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message, Notification
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message, Notification, HelpSection
 from django.db import models
 from tinymce.widgets import TinyMCE
 
@@ -37,3 +37,5 @@ admin.site.register(Chat)
 admin.site.register(Message)
 
 admin.site.register(Notification)
+
+admin.site.register(HelpSection)

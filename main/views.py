@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message, Notification
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message, Notification, HelpSection
 from django.http import HttpResponse
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash, get_user_model
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
-from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddCategory, AddContent, AddImage, AddVideo, AddAudio, AddFile, AddFeed, EditClass, EditSubject, EditChapter, EditSection, EditStudentCategory, EditStudentContent, EditImage, EditVideo, EditAudio, EditFile, EditFeed, NewChat, NewMessage, AddNotification, EditNotification
+from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddCategory, AddContent, AddImage, AddVideo, AddAudio, AddFile, AddFeed, EditClass, EditSubject, EditChapter, EditSection, EditStudentCategory, EditStudentContent, EditImage, EditVideo, EditAudio, EditFile, EditFeed, NewChat, NewMessage, AddNotification, EditNotification, AddHelpSection, EditHelpSection
 from django.core.paginator import Paginator
 from django.utils.text import slugify
 from django.core.management import call_command
@@ -48,10 +48,26 @@ def contactpage(request):
         )
 
 def helppage(request):
+    if request.method == "POST":
+        form = AddHelpSection(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.info(request, "Content Added Successfully!")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, error)
+        return redirect("main:helppage")
+
+    form = AddHelpSection()
+    content = HelpSection.objects.all().order_by('help_title')
+    page_content = Paginator(content, 12)
+    page_number = request.GET.get('page')
+    page_obj = page_content.get_page(page_number)
     return render(
         request=request,
         template_name="main/help.html",
-        context={"title": "Help"}
+        context={"title": "Help", "editor": is_editor(request.user), "page_obj": page_obj, "form": form, "next": request.get_full_path()}
         )
 
 def register(request):
@@ -1082,6 +1098,20 @@ def delete_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
+            elif request.POST.get('data_type') == "help":
+                try:
+                    instance = HelpSection.objects.get(id=request.POST.get('data_id'))
+                    if is_editor(request.user):
+                        instance.delete()
+                        messages.info(request, "Content Deleted Successfully!")
+                        if request.POST.get('data_next'):
+                            return redirect(request.POST.get('data_next'))
+                        else:
+                            return redirect("main:homepage")
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
             else:
                 return redirect("main:homepage")
         else:
@@ -1540,6 +1570,39 @@ def edit_data(request):
                             messages.info(request, "Notification Edited Successfully!")
                         except:
                             messages.error(request, "Error while saving the notification!")
+                        if request.POST.get('data_next'):
+                            return redirect(request.POST.get('data_next'))
+                        else:
+                            return redirect("main:homepage")
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "help":
+                try:
+                    instance = HelpSection.objects.get(id=request.POST.get('data_id'))
+                    if is_editor(request.user):
+                        form = EditHelpSection(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "help_title": instance.help_title, "help_text": instance.help_text})
+                        return render(
+                            request=request,
+                            template_name="main/edit-data.html",
+                            context={"title": "Edit Help", "form": form}
+                            )
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-help":
+                try:
+                    instance = HelpSection.objects.get(id=request.POST.get('data_id'))
+                    if is_editor(request.user):
+                        instance.help_title = request.POST.get('help_title')
+                        instance.help_text = request.POST.get('help_text')
+                        try:
+                            instance.save()
+                            messages.info(request, "Content Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the content!")
                         if request.POST.get('data_next'):
                             return redirect(request.POST.get('data_next'))
                         else:

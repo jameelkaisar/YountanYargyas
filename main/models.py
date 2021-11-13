@@ -310,3 +310,19 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.notif_title
+
+class HelpSection(models.Model):
+    def user_directory_path(instance, filename):
+        return f"help/{filename}"
+
+    help_title = models.CharField(max_length=500)
+    help_text = models.CharField(max_length=5000)
+    help_video = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+
+    def delete(self, *args, **kwargs):
+        if self.help_video:
+            self.help_video.storage.delete(self.help_video.name)
+        super(HelpSection, self).delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.help_title
