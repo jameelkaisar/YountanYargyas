@@ -15,7 +15,7 @@ class Command(BaseCommand):
         try:
             self.stdout.write("\nGenerating \"SECRET_KEY\"...")
             with open(".env", "w") as file:
-                file.write(f"SECRET_KEY={get_random_secret_key()}\n")
+                file.write(f"SECRET_KEY={get_random_secret_key()}\nDATABASE_CODE=0\n")
 
             self.stdout.write("Command \"makemigrations\":")
             call_command("makemigrations")

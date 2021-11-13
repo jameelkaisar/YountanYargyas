@@ -79,12 +79,26 @@ WSGI_APPLICATION = 'YountanYargyas.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DATABASE_CODE = str(getenv('DATABASE_CODE'))
+
+if DATABASE_CODE == "1":
+    DATABASES = {
+        'default': {
+            'ENGINE': "django.db.backends.postgresql_psycopg2",
+            'NAME': f"{str(getenv('DATABASE_NAME'))}",
+            'USER': f"{str(getenv('DATABASE_USER'))}",
+            'PASSWORD': f"{str(getenv('DATABASE_PASS'))}",
+            'HOST': f"{str(getenv('DATABASE_HOST'))}",
+            'PORT': f"{str(getenv('DATABASE_PORT'))}",
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': "django.db.backends.sqlite3",
+            'NAME': BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
