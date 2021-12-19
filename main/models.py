@@ -77,8 +77,8 @@ class StudentSection(models.Model):
     section_summary = models.CharField(max_length=500, blank=True, null=True)
     section_slug = models.SlugField(max_length=100)
 
-    section_video = models.FileField(upload_to=user_directory_path, blank=True, null=True)
-    section_video_base = models.CharField(max_length=300)
+    section_file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+    section_file_base = models.CharField(max_length=300)
     section_text = models.TextField(blank=True, null=True)
 
     student_chapter = models.ForeignKey(StudentChapter, default=1, verbose_name="Chapter", on_delete=models.SET_DEFAULT)
@@ -93,9 +93,20 @@ class StudentSection(models.Model):
             raise ValidationError(message=f"Section with name \"{self.student_section}\" already exists.",
                                   code='unique_together',)
 
+    def file_type(self):
+        name, extension = splitext(self.section_file.name.lower())
+        if extension in ['.apng', '.avif', '.gif', '.jpg', '.jpeg', '.jfif', '.pjpeg', '.pjp', '.png', '.svg', '.webp']:
+            return 'image'
+        elif extension in ['.mp4', '.webm', '.3gp']:
+            return 'video'
+        elif extension in ['.mp3', '.wav', '.ogg', '.m4a']:
+            return 'audio'
+        else:
+            return 'file'
+
     def delete(self, *args, **kwargs):
-        if self.section_video:
-            self.section_video.storage.delete(self.section_video.name)
+        if self.section_file:
+            self.section_file.storage.delete(self.section_file.name)
         super(StudentSection, self).delete(*args, **kwargs)
 
     def __str__(self):

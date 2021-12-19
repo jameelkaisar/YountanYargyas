@@ -47,9 +47,9 @@ class AddChapter(forms.ModelForm):
 class AddSection(forms.ModelForm):
     class Meta:
         model = StudentSection
-        fields = ["student_section", "section_summary", "section_video", "section_text", "student_chapter"]
-        labels = {"student_section": "Section Name", "section_summary": "Section Summary", "section_video": "", "section_text": "Section Text", "student_chapter": "Student Chapter (FK)"}
-        widgets = {"student_section": forms.TextInput(attrs={"autocomplete": "off", "maxlength": "100"}), "section_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "section_video": forms.FileInput(attrs={"style": "display: none;", "accept": "video/*"}), "section_text": TinyMCE(), "student_chapter": forms.HiddenInput()}
+        fields = ["student_section", "section_summary", "section_file", "section_text", "student_chapter"]
+        labels = {"student_section": "Section Name", "section_summary": "Section Summary", "section_file": "", "section_text": "Section Text", "student_chapter": "Student Chapter (FK)"}
+        widgets = {"student_section": forms.TextInput(attrs={"autocomplete": "off", "maxlength": "100"}), "section_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "section_file": forms.FileInput(attrs={"style": "display: none;"}), "section_text": TinyMCE(), "student_chapter": forms.HiddenInput()}
 
 class AddCategory(forms.ModelForm):
     class Meta:

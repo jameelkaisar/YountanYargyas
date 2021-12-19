@@ -15,18 +15,49 @@
     <div class="card card-panel grey lighten-5 z-depth-1">
         <h3 align="center">{{ student_section.student_section }}</h3>
         <div class="divider"></div>
-        {% if student_section.section_video %}
-            <div align="center">
-                <video class="responsive-video section" controls>
-                    <source src="{{ student_section.section_video.url }}" type='video/mp4'>
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-            <div class="divider"></div>
+        {% if student_section.section_file %}
+            {% if student_section.file_type == 'image' %}
+                <div align="center">
+                    <p>
+                        <img class="materialboxed" style="max-width: 100%;" src="{{ student_section.section_file.url }}">
+                    </p>
+                </div>
+                <div class="divider"></div>
+            {% elif student_section.file_type == 'video' %}
+                <div align="center">
+                    <p>
+                        <video class="responsive-video" controls>
+                            <source src="{{ student_section.section_file.url }}" type='video/mp4'>
+                            Your browser does not support the video tag.
+                        </video>
+                    </p>
+                </div>
+                <div class="divider"></div>
+            {% elif student_section.file_type == 'audio' %}
+                <div align="center">
+                    <p>
+                        <audio style="width: 100%" controls>
+                            <source src="{{ student_section.section_file.url }}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </p>
+                </div>
+                <div class="divider"></div>
+            {% endif %}
         {% endif %}
         <p>{{ student_section.section_summary|linebreaks }}</p>
         <div class="divider"></div>
         <p>{{ student_section.section_text|safe }}</p>
+        {% if student_section.section_file %}
+            {% if student_section.file_type == 'file' %}
+                <div class="divider"></div>
+                <div align="center">
+                    <p>
+                        <a href="{{ student_section.section_file.url }}" class="btn waves-light"><i class="material-icons left">download</i>Download</a>
+                    </p>
+                </div>
+            {% endif %}
+        {% endif %}
         {% if editor %}
             <div align="right">
                 <form action="/edit-data" method="POST" style="display: inline;">
