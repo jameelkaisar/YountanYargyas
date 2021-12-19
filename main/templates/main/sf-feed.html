@@ -34,6 +34,15 @@
             </div>
         </li>
     </ul>
+    <script type="text/javascript">
+        var uploadField = document.getElementById("id_feed_file");
+        uploadField.onchange = function() {
+            if(this.files[0].size > (300*1048576)) {
+               alert("Max File Size is 300 MB");
+               this.value = "";
+            };
+        };
+    </script>
 
     <div class="row">
         {% for post in page_obj %}
