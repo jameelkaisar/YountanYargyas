@@ -10,7 +10,7 @@ from os.path import splitext
 
 class StudentClass(models.Model):
     student_class = models.CharField(max_length=100)
-    class_summary = models.CharField(max_length=500)
+    class_summary = models.CharField(max_length=500, blank=True, null=True)
     # Image/Media to be added later
     class_slug = models.SlugField(max_length=100)
 
@@ -29,7 +29,7 @@ class StudentClass(models.Model):
 
 class StudentSubject(models.Model):
     student_subject = models.CharField(max_length=100)
-    subject_summary = models.CharField(max_length=500)
+    subject_summary = models.CharField(max_length=500, blank=True, null=True)
     # Image/Media to be added later
     subject_slug = models.SlugField(max_length=100)
 
@@ -50,7 +50,7 @@ class StudentSubject(models.Model):
 
 class StudentChapter(models.Model):
     student_chapter = models.CharField(max_length=100)
-    chapter_summary = models.CharField(max_length=500)
+    chapter_summary = models.CharField(max_length=500, blank=True, null=True)
     # Image/Media to be added later
     chapter_slug = models.SlugField(max_length=100)
 
@@ -74,12 +74,12 @@ class StudentSection(models.Model):
         return f"{instance.section_video_base}{instance.section_slug}.{filename.split('.')[-1]}"
 
     student_section = models.CharField(max_length=100)
-    section_summary = models.CharField(max_length=500)
+    section_summary = models.CharField(max_length=500, blank=True, null=True)
     section_slug = models.SlugField(max_length=100)
 
     section_video = models.FileField(upload_to=user_directory_path, blank=True, null=True)
     section_video_base = models.CharField(max_length=300)
-    section_text = models.TextField()
+    section_text = models.TextField(blank=True, null=True)
 
     student_chapter = models.ForeignKey(StudentChapter, default=1, verbose_name="Chapter", on_delete=models.SET_DEFAULT)
 
@@ -106,7 +106,7 @@ class StudentCategory(models.Model):
         return f"student/content/{slugify(instance.category_slug)}/{instance.category_slug}.{filename.split('.')[-1]}"
 
     student_category = models.CharField(max_length=100)
-    category_summary = models.CharField(max_length=500)
+    category_summary = models.CharField(max_length=500, blank=True, null=True)
     category_slug = models.SlugField(max_length=100)
 
     category_image = models.FileField(upload_to=user_directory_path)
@@ -148,7 +148,7 @@ class StudentContent(models.Model):
         name, extension = splitext(self.content_file.name.lower())
         if extension in ['.apng', '.avif', '.gif', '.jpg', '.jpeg', '.jfif', '.pjpeg', '.pjp', '.png', '.svg', '.webp']:
             return 'image'
-        elif extension in ['.mp4', 'webm']:
+        elif extension in ['.mp4', '.webm', '.3gp']:
             return 'video'
         elif extension in ['.mp3', '.wav', '.ogg', '.m4a']:
             return 'audio'
@@ -168,9 +168,9 @@ class UploadImage(models.Model):
         return f"upload/images/{slugify(instance.image_name)}.{filename.split('.')[-1]}"
 
     image_name = models.CharField(max_length=100)
-    image_summary = models.CharField(max_length=500)
+    image_summary = models.CharField(max_length=500, blank=True, null=True)
 
-    image_file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+    image_file = models.FileField(upload_to=user_directory_path)
 
     class Meta:
         verbose_name_plural = "Images"
@@ -188,9 +188,9 @@ class UploadVideo(models.Model):
         return f"upload/videos/{slugify(instance.video_name)}.{filename.split('.')[-1]}"
 
     video_name = models.CharField(max_length=100)
-    video_summary = models.CharField(max_length=500)
+    video_summary = models.CharField(max_length=500, blank=True, null=True)
 
-    video_file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+    video_file = models.FileField(upload_to=user_directory_path)
 
     class Meta:
         verbose_name_plural = "Videos"
@@ -208,9 +208,9 @@ class UploadAudio(models.Model):
         return f"upload/audios/{slugify(instance.audio_name)}.{filename.split('.')[-1]}"
 
     audio_name = models.CharField(max_length=100)
-    audio_summary = models.CharField(max_length=500)
+    audio_summary = models.CharField(max_length=500, blank=True, null=True)
 
-    audio_file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+    audio_file = models.FileField(upload_to=user_directory_path)
 
     class Meta:
         verbose_name_plural = "Audios"
@@ -228,9 +228,9 @@ class UploadFile(models.Model):
         return f"upload/files/{slugify(instance.file_name)}.{filename.split('.')[-1]}"
 
     file_name = models.CharField(max_length=100)
-    file_summary = models.CharField(max_length=500)
+    file_summary = models.CharField(max_length=500, blank=True, null=True)
 
-    file_file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+    file_file = models.FileField(upload_to=user_directory_path)
 
     class Meta:
         verbose_name_plural = "Files"
@@ -260,7 +260,7 @@ class UploadFeed(models.Model):
         name, extension = splitext(self.feed_file.name.lower())
         if extension in ['.apng', '.avif', '.gif', '.jpg', '.jpeg', '.jfif', '.pjpeg', '.pjp', '.png', '.svg', '.webp']:
             return 'image'
-        elif extension in ['.mp4', 'webm']:
+        elif extension in ['.mp4', '.webm', '.3gp']:
             return 'video'
         elif extension in ['.mp3', '.wav', '.ogg', '.m4a']:
             return 'audio'
@@ -299,7 +299,7 @@ class Notification(models.Model):
         return f"notifications/{filename}"
 
     notif_title = models.CharField(max_length=500)
-    notif_text = models.CharField(max_length=5000)
+    notif_text = models.CharField(max_length=5000, blank=True, null=True)
     notif_time = models.DateTimeField(auto_now_add=True)
     notif_file = models.FileField(upload_to=user_directory_path, blank=True, null=True)
 
