@@ -28,11 +28,11 @@
             <li>
                 <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Upload File</big></div>
                 <div class="collapsible-body">
-                    <form method="POST" enctype="multipart/form-data">
+                    <form method="POST" enctype="multipart/form-data" id="upload_progress_form">
                         {% csrf_token %}
                         {{ form.as_p }}
                         <p><label style="margin-right: 25px;">File:</label><label for="id_file_file" class="btn">Choose File</label></p>
-                        <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Upload File</button></p>
+                        <p style="display: flex; justify-content: center;"><button type="submit" class="btn" id="upload_progress_button">Upload File</button></p>
                     </form>
                 </div>
             </li>

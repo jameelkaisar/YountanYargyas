@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message, Notification, HelpSection
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash, get_user_model
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
@@ -53,11 +53,12 @@ def helppage(request):
         if form.is_valid():
             form.save()
             messages.info(request, "Content Added Successfully!")
+            return JsonResponse({'result': 'success'})
         else:
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, error)
-        return redirect("main:helppage")
+            return JsonResponse({'result': 'error'})
 
     form = AddHelpSection()
     content = HelpSection.objects.all().order_by('help_title')
@@ -369,11 +370,12 @@ def upload_images(request):
             if form.is_valid():
                 form.save()
                 messages.info(request, "Image Uploaded Successfully!")
+                return JsonResponse({'result': 'success'})
             else:
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
-            return redirect(request.get_full_path())
+                return JsonResponse({'result': 'error'})
 
         form = AddImage()
         upload_image = list(reversed(UploadImage.objects.all()))
@@ -396,11 +398,12 @@ def upload_videos(request):
             if form.is_valid():
                 form.save()
                 messages.info(request, "Video Uploaded Successfully!")
+                return JsonResponse({'result': 'success'})
             else:
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
-            return redirect(request.get_full_path())
+                return JsonResponse({'result': 'error'})
 
         form = AddVideo()
         upload_video = list(reversed(UploadVideo.objects.all()))
@@ -423,11 +426,12 @@ def upload_audios(request):
             if form.is_valid():
                 form.save()
                 messages.info(request, "Audio Uploaded Successfully!")
+                return JsonResponse({'result': 'success'})
             else:
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
-            return redirect(request.get_full_path())
+                return JsonResponse({'result': 'error'})
 
         form = AddAudio()
         upload_audio = list(reversed(UploadAudio.objects.all()))
@@ -450,11 +454,12 @@ def upload_files(request):
             if form.is_valid():
                 form.save()
                 messages.info(request, "File Uploaded Successfully!")
+                return JsonResponse({'result': 'success'})
             else:
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
-            return redirect(request.get_full_path())
+                return JsonResponse({'result': 'error'})
 
         form = AddFile()
         upload_file = list(reversed(UploadFile.objects.all()))
@@ -486,11 +491,12 @@ def sf_feed(request):
                 form_instance.feed_user = request.user
                 form.save()
                 messages.info(request, "Posted Successfully!")
+                return JsonResponse({'result': 'success'})
             else:
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
-            return redirect(request.get_full_path())
+                return JsonResponse({'result': 'error'})
 
         form = AddFeed()
         upload_feed = UploadFeed.objects.all().order_by('-feed_date')
@@ -702,11 +708,12 @@ def notifications(request):
         if form.is_valid():
             form.save()
             messages.info(request, "Notification Added Successfully!")
+            return JsonResponse({'result': 'success'})
         else:
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, error)
-        return redirect("main:notifications")
+            return JsonResponse({'result': 'error'})
 
     form = AddNotification()
     notifications = Notification.objects.all().order_by('-notif_time')
@@ -822,11 +829,12 @@ def student_chapter(request, class_slug, subject_slug, chapter_slug):
                         form_instance.section_video_base = f"classes/{class_slug}/{subject_slug}/{chapter_slug}/"
                         form.save()
                         messages.info(request, "Section Added Successfully!")
+                        return JsonResponse({'result': 'success'})
                     else:
                         for field, errors in form.errors.items():
                             for error in errors:
                                 messages.error(request, error)
-                    return redirect(request.get_full_path())
+                        return JsonResponse({'result': 'error'})
 
                 form = AddSection(initial={"student_chapter": StudentChapter.objects.filter(chapter_slug=chapter_slug, student_subject__subject_slug=subject_slug, student_subject__student_class__class_slug=class_slug)[0]})
                 return render(
@@ -885,11 +893,12 @@ def student_categories(request):
         if form.is_valid():
             form.save()
             messages.info(request, "Category Added Successfully!")
+            return JsonResponse({'result': 'success'})
         else:
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, error)
-        return redirect(request.get_full_path())
+            return JsonResponse({'result': 'error'})
 
     form = AddCategory()
     return render(
@@ -911,11 +920,12 @@ def student_content(request, category_slug):
                 form_instance.content_user = request.user
                 form.save()
                 messages.info(request, "Content Added Successfully!")
+                return JsonResponse({'result': 'success'})
             else:
                 for field, errors in form.errors.items():
                     for error in errors:
                         messages.error(request, error)
-            return redirect(request.get_full_path())
+                return JsonResponse({'result': 'error'})
 
         form = AddContent(initial={"content_category": StudentCategory.objects.filter(category_slug=category_slug)[0]})
         content = matching_content.order_by('-content_time')

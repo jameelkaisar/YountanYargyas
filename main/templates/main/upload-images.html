@@ -28,11 +28,11 @@
             <li>
                 <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>Upload Image</big></div>
                 <div class="collapsible-body">
-                    <form method="POST" enctype="multipart/form-data">
+                    <form method="POST" enctype="multipart/form-data" id="upload_progress_form">
                         {% csrf_token %}
                         {{ form.as_p }}
                         <p><label style="margin-right: 25px;">Image:</label><label for="id_image_file" class="btn">Choose Image</label></p>
-                        <p style="display: flex; justify-content: center;"><button type="submit" class="btn">Upload Image</button></p>
+                        <p style="display: flex; justify-content: center;"><button type="submit" class="btn" id="upload_progress_button">Upload Image</button></p>
                     </form>
                 </div>
             </li>
