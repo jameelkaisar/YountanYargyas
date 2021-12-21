@@ -6,6 +6,9 @@ from django.utils.text import slugify
 from django.conf import settings
 from os.path import splitext
 
+import random
+import string
+
 # Create your models here.
 
 class StudentClass(models.Model):
@@ -18,7 +21,7 @@ class StudentClass(models.Model):
         verbose_name_plural = "Classes"
 
     def validate_unique(self, *args, **kwargs):
-        self.class_slug = slugify(self.student_class)
+        self.class_slug = slugify(self.student_class) if slugify(self.student_class) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
         super(StudentClass, self).validate_unique(*args, **kwargs)
         if self.__class__.objects.filter(class_slug=self.class_slug).exists():
             raise ValidationError(message=f"Class with name \"{self.student_class}\" already exists.",
@@ -39,7 +42,7 @@ class StudentSubject(models.Model):
         verbose_name_plural = "Subjects"
 
     def validate_unique(self, *args, **kwargs):
-        self.subject_slug = slugify(self.student_subject)
+        self.subject_slug = slugify(self.student_subject) if slugify(self.student_subject) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
         super(StudentSubject, self).validate_unique(*args, **kwargs)
         if self.__class__.objects.filter(subject_slug=self.subject_slug, student_class__class_slug=self.student_class.class_slug).exists():
             raise ValidationError(message=f"Subject with name \"{self.student_subject}\" already exists.",
@@ -60,7 +63,7 @@ class StudentChapter(models.Model):
         verbose_name_plural = "Chapters"
 
     def validate_unique(self, *args, **kwargs):
-        self.chapter_slug = slugify(self.student_chapter)
+        self.chapter_slug = slugify(self.student_chapter) if slugify(self.student_chapter) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
         super(StudentChapter, self).validate_unique(*args, **kwargs)
         if self.__class__.objects.filter(chapter_slug=self.chapter_slug, student_subject__subject_slug=self.student_subject.subject_slug, student_subject__student_class__class_slug=self.student_subject.student_class.class_slug).exists():
             raise ValidationError(message=f"Chapter with name \"{self.student_chapter}\" already exists.",
@@ -87,7 +90,7 @@ class StudentSection(models.Model):
         verbose_name_plural = "Sections"
 
     def validate_unique(self, *args, **kwargs):
-        self.section_slug = slugify(self.student_section)
+        self.section_slug = slugify(self.student_section) if slugify(self.student_section) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
         super(StudentSection, self).validate_unique(*args, **kwargs)
         if self.__class__.objects.filter(section_slug=self.section_slug, student_chapter__chapter_slug=self.student_chapter.chapter_slug, student_chapter__student_subject__subject_slug=self.student_chapter.student_subject.subject_slug, student_chapter__student_subject__student_class__class_slug=self.student_chapter.student_subject.student_class.class_slug).exists():
             raise ValidationError(message=f"Section with name \"{self.student_section}\" already exists.",
@@ -114,7 +117,7 @@ class StudentSection(models.Model):
 
 class StudentCategory(models.Model):
     def user_directory_path(instance, filename):
-        return f"student/content/{slugify(instance.category_slug)}/{instance.category_slug}.{filename.split('.')[-1]}"
+        return f"student/content/{instance.category_slug}/{instance.category_slug}.{filename.split('.')[-1]}"
 
     student_category = models.CharField(max_length=100)
     category_summary = models.CharField(max_length=500, blank=True, null=True)
@@ -126,7 +129,7 @@ class StudentCategory(models.Model):
         verbose_name_plural = "Categories"
 
     def validate_unique(self, *args, **kwargs):
-        self.category_slug = slugify(self.student_category)
+        self.category_slug = slugify(self.student_category) if slugify(self.student_category) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
         super(StudentCategory, self).validate_unique(*args, **kwargs)
         if self.__class__.objects.filter(category_slug=self.category_slug).exists():
             raise ValidationError(message=f"Category with name \"{self.student_category}\" already exists.",
@@ -142,7 +145,7 @@ class StudentCategory(models.Model):
 
 class StudentContent(models.Model):
     def user_directory_path(instance, filename):
-        return f"student/content/{instance.content_category.category_slug}/{slugify(instance.student_content)}.{filename.split('.')[-1]}"
+        return f"student/content/{instance.content_category.category_slug}/{slugify(instance.student_content) if slugify(instance.student_content) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))}.{filename.split('.')[-1]}"
 
     student_content = models.CharField(max_length=100)
     content_text = models.TextField()
@@ -176,7 +179,7 @@ class StudentContent(models.Model):
 
 class UploadImage(models.Model):
     def user_directory_path(instance, filename):
-        return f"upload/images/{slugify(instance.image_name)}.{filename.split('.')[-1]}"
+        return f"upload/images/{slugify(instance.image_name) if slugify(instance.image_name) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))}.{filename.split('.')[-1]}"
 
     image_name = models.CharField(max_length=100)
     image_summary = models.CharField(max_length=500, blank=True, null=True)
@@ -196,7 +199,7 @@ class UploadImage(models.Model):
 
 class UploadVideo(models.Model):
     def user_directory_path(instance, filename):
-        return f"upload/videos/{slugify(instance.video_name)}.{filename.split('.')[-1]}"
+        return f"upload/videos/{slugify(instance.video_name) if slugify(instance.video_name) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))}.{filename.split('.')[-1]}"
 
     video_name = models.CharField(max_length=100)
     video_summary = models.CharField(max_length=500, blank=True, null=True)
@@ -216,7 +219,7 @@ class UploadVideo(models.Model):
 
 class UploadAudio(models.Model):
     def user_directory_path(instance, filename):
-        return f"upload/audios/{slugify(instance.audio_name)}.{filename.split('.')[-1]}"
+        return f"upload/audios/{slugify(instance.audio_name) if slugify(instance.audio_name) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))}.{filename.split('.')[-1]}"
 
     audio_name = models.CharField(max_length=100)
     audio_summary = models.CharField(max_length=500, blank=True, null=True)
@@ -236,7 +239,7 @@ class UploadAudio(models.Model):
 
 class UploadFile(models.Model):
     def user_directory_path(instance, filename):
-        return f"upload/files/{slugify(instance.file_name)}.{filename.split('.')[-1]}"
+        return f"upload/files/{slugify(instance.file_name) if slugify(instance.file_name) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))}.{filename.split('.')[-1]}"
 
     file_name = models.CharField(max_length=100)
     file_summary = models.CharField(max_length=500, blank=True, null=True)
@@ -256,7 +259,8 @@ class UploadFile(models.Model):
 
 class UploadFeed(models.Model):
     def user_directory_path(instance, filename):
-        return f"feed/{instance.feed_user}/{filename}"
+        filename_base = filename.rsplit(".", 1)[0]
+        return f"feed/{instance.feed_user}/{slugify(filename_base) if slugify(filename_base) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))}.{filename.split('.')[-1]}"
 
     feed_text = models.CharField(max_length=5000)
     feed_date = models.DateTimeField(auto_now_add=True)
@@ -307,7 +311,8 @@ class Message(models.Model):
 
 class Notification(models.Model):
     def user_directory_path(instance, filename):
-        return f"notifications/{filename}"
+        filename_base = filename.rsplit(".", 1)[0]
+        return f"notifications/{slugify(filename_base) if slugify(filename_base) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))}.{filename.split('.')[-1]}"
 
     notif_title = models.CharField(max_length=500)
     notif_text = models.CharField(max_length=5000, blank=True, null=True)
@@ -324,7 +329,8 @@ class Notification(models.Model):
 
 class HelpSection(models.Model):
     def user_directory_path(instance, filename):
-        return f"help/{filename}"
+        filename_base = filename.rsplit(".", 1)[0]
+        return f"help/{slugify(filename_base) if slugify(filename_base) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))}.{filename.split('.')[-1]}"
 
     help_title = models.CharField(max_length=500)
     help_text = models.CharField(max_length=5000)

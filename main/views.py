@@ -12,6 +12,9 @@ from django.utils import timezone
 from pathlib import Path
 from shutil import copytree
 
+import random
+import string
+
 # Create your views here.
 
 def is_editor(user):
@@ -1150,7 +1153,14 @@ def edit_data(request):
                     instance.section_summary = request.POST.get('section_summary')
                     instance.section_text = request.POST.get('section_text')
                     # No need to change the video name
-                    if instance.section_slug == slugify(instance.student_section):
+                    if slugify(instance.student_section) == "":
+                        try:
+                            instance.section_slug = slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
+                            instance.save()
+                            messages.info(request, "Section Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the section!")
+                    elif instance.section_slug == slugify(instance.student_section):
                         try:
                             instance.save()
                             messages.info(request, "Section Edited Successfully!")
@@ -1193,7 +1203,14 @@ def edit_data(request):
                     instance.section_summary = request.POST.get('section_summary')
                     instance.section_text = request.POST.get('section_text')
                     # No need to change the video name
-                    if instance.section_slug == slugify(instance.student_section):
+                    if slugify(instance.student_section) == "":
+                        try:
+                            instance.section_slug = slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
+                            instance.save()
+                            messages.info(request, "Section Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the section!")
+                    elif instance.section_slug == slugify(instance.student_section):
                         try:
                             instance.save()
                             messages.info(request, "Section Edited Successfully!")
@@ -1234,7 +1251,14 @@ def edit_data(request):
                     instance = StudentChapter.objects.get(id=request.POST.get('data_id'))
                     instance.student_chapter = request.POST.get('student_chapter')
                     instance.chapter_summary = request.POST.get('chapter_summary')
-                    if instance.chapter_slug == slugify(instance.student_chapter):
+                    if slugify(instance.student_chapter) == "":
+                        try:
+                            instance.chapter_slug = slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
+                            instance.save()
+                            messages.info(request, "Chapter Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the chapter!")
+                    elif instance.chapter_slug == slugify(instance.student_chapter):
                         try:
                             instance.save()
                             messages.info(request, "Chapter Edited Successfully!")
@@ -1275,7 +1299,14 @@ def edit_data(request):
                     instance = StudentSubject.objects.get(id=request.POST.get('data_id'))
                     instance.student_subject = request.POST.get('student_subject')
                     instance.subject_summary = request.POST.get('subject_summary')
-                    if instance.subject_slug == slugify(instance.student_subject):
+                    if slugify(instance.student_subject) == "":
+                        try:
+                            instance.subject_slug = slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
+                            instance.save()
+                            messages.info(request, "Subject Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the subject!")
+                    elif instance.subject_slug == slugify(instance.student_subject):
                         try:
                             instance.save()
                             messages.info(request, "Subject Edited Successfully!")
@@ -1316,7 +1347,14 @@ def edit_data(request):
                     instance = StudentClass.objects.get(id=request.POST.get('data_id'))
                     instance.student_class = request.POST.get('student_class')
                     instance.class_summary = request.POST.get('class_summary')
-                    if instance.class_slug == slugify(instance.student_class):
+                    if slugify(instance.student_class) == "":
+                        try:
+                            instance.class_slug = slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
+                            instance.save()
+                            messages.info(request, "Class Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the class!")
+                    elif instance.class_slug == slugify(instance.student_class):
                         try:
                             instance.save()
                             messages.info(request, "Class Edited Successfully!")
@@ -1357,7 +1395,14 @@ def edit_data(request):
                     instance = StudentCategory.objects.get(id=request.POST.get('data_id'))
                     instance.student_category = request.POST.get('student_category')
                     instance.category_summary = request.POST.get('category_summary')
-                    if instance.category_slug == slugify(instance.student_category):
+                    if slugify(instance.student_category) == "":
+                        try:
+                            instance.category_slug = slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))
+                            instance.save()
+                            messages.info(request, "Category Edited Successfully!")
+                        except:
+                            messages.error(request, "Error while saving the category!")
+                    elif instance.category_slug == slugify(instance.student_category):
                         try:
                             instance.save()
                             messages.info(request, "Category Edited Successfully!")
