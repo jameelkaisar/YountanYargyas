@@ -8,6 +8,7 @@
     <div style="height: 300px;"></div>
 
     <div class="row" style="margin-top: -100px;">
+        {% comment %}
         <a href="/notifications" style="display: block; color: inherit; text-decoration: inherit;">
             <div class="col s12 m6 l4">
                 <div class="card">
@@ -32,25 +33,26 @@
                 <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
             </div>
         </div>
-        <a href="/student-feed" style="display: block; color: inherit; text-decoration: inherit;">
+        {% endcomment %}
+        <a href="/community" style="display: block; color: inherit; text-decoration: inherit;">
             <div class="col s12 m6 l4">
                 <div class="card">
                     <div class="card-image">
-                        <img src="{% static 'main/images/student-feed.jpg' %}">
+                        <img src="{% static 'main/images/community.jpg' %}">
                         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0px -70px 100px -10px #000000;"></div>
-                        <span class="card-title"><b>Student Feed</b></span>
+                        <span class="card-title"><b>Community Notice Board</b></span>
                         <a href="#modal2" class="btn-floating halfway-fab waves-effect waves-light red modal-trigger"><i class="material-icons">info_outline</i></a>
                     </div>
                     <div class="card-content">
-                        <p style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 3em; line-height: 1.5;">This section contains posts uploaded by students. Students can upload an interesting picture or a video that they have captured, post the progress of the project they are working on or maybe ask other students for help.</p>
+                        <p style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 3em; line-height: 1.5;">This section contains posts uploaded by students and other members of the community. Users can upload an interesting picture or a video that they have captured, post the progress of the project they are working on or maybe ask others for help.</p>
                     </div>
                 </div>
             </div>
         </a>
         <div id="modal2" class="modal">
             <div class="modal-content">
-                <h4>Student Feed</h4>
-                <p>This section contains posts uploaded by students. Students can upload an interesting picture or a video that they have captured, post the progress of the project they are working on or maybe ask other students for help.</p>
+                <h4>Community Notice Board</h4>
+                <p>This section contains posts uploaded by students and other members of the community. Users can upload an interesting picture or a video that they have captured, post the progress of the project they are working on or maybe ask others for help.</p>
             </div>
             <div class="modal-footer">
                 <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
@@ -80,6 +82,7 @@
                 <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
             </div>
         </div>
+        {% comment %}
         <a href="/messages" style="display: block; color: inherit; text-decoration: inherit;">
             <div class="col s12 m6 l4">
                 <div class="card">
@@ -104,6 +107,7 @@
                 <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
             </div>
         </div>
+        {% endcomment %}
         <a href="/classes" style="display: block; color: inherit; text-decoration: inherit;">
             <div class="col s12 m6 l4">
                 <div class="card">
@@ -114,7 +118,7 @@
                         <a href="#modal5" class="btn-floating halfway-fab waves-effect waves-light red modal-trigger"><i class="material-icons">info_outline</i></a>
                     </div>
                     <div class="card-content">
-                        <p style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 3em; line-height: 1.5;">This section contains curricular videos. Teachers can add Classes, Subjects, Chapters in this section. Each chapter is divided into Sections which may contain a video, text or both</p>
+                        <p style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 3em; line-height: 1.5;">This section contains curricular content. Teachers can add Classes, Subjects, Chapters in this section. Each chapter is divided into Sections which may contain a video, audio, image or file along with some text.</p>
                     </div>
                 </div>
             </div>
@@ -122,13 +126,13 @@
         <div id="modal5" class="modal">
             <div class="modal-content">
                 <h4>Curricular Learning</h4>
-                <p>This section contains curricular videos. Teachers can add Classes, Subjects, Chapters in this section. Each chapter is divided into Sections which may contain a video, text or both</p>
+                <p>This section contains curricular content. Teachers can add Classes, Subjects, Chapters in this section. Each chapter is divided into Sections which may contain a video, audio, image or file along with some text.</p>
             </div>
             <div class="modal-footer">
                 <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
             </div>
         </div>
-{% comment %}
+        {% comment %}
         <a href="#!" style="display: block; color: inherit; text-decoration: inherit;">
             <div class="col s12 m6 l4">
                 <div class="card">
@@ -153,8 +157,8 @@
                 <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
             </div>
         </div>
-{% endcomment %}
-{% comment %}
+        {% endcomment %}
+        {% comment %}
         <a href="#!" style="display: block; color: inherit; text-decoration: inherit;">
             <div class="col s12 m6 l4">
                 <div class="card">
@@ -179,7 +183,8 @@
                 <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
             </div>
         </div>
-{% endcomment %}
+        {% endcomment %}
+        {% comment %}
         <a href="/upload" style="display: block; color: inherit; text-decoration: inherit;">
             <div class="col s12 m6 l4">
                 <div class="card">
@@ -204,6 +209,7 @@
                 <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
             </div>
         </div>
+        {% endcomment %}
         {% if user.is_superuser %}
             <a href="/admin" style="display: block; color: inherit; text-decoration: inherit;">
                 <div class="col s12 m6 l4">

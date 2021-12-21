@@ -478,14 +478,14 @@ def upload_files(request):
         messages.error(request, "You must be logged in to view this page!")
         return redirect(f"/login?next={request.get_full_path()}")
 
-def student_feed(request):
+def community_feed(request):
     if request.user.is_authenticated:
-        return redirect("main:sf_feed")
+        return redirect("main:cf_feed")
     else:
         messages.error(request, "You must be logged in to view this page!")
         return redirect(f"/login?next={request.get_full_path()}")
 
-def sf_feed(request):
+def cf_feed(request):
     if request.user.is_authenticated:
         if request.method == "POST":
             form = AddFeed(request.POST, request.FILES)
@@ -508,14 +508,14 @@ def sf_feed(request):
         page_obj = page_upload_feed.get_page(page_number)
         return render(
             request=request,
-            template_name="main/sf-feed.html",
+            template_name="main/cf-feed.html",
             context={"title": "Feed", "editor": is_editor(request.user), "page_obj": page_obj, "form": form, "next": request.get_full_path()}
             )
     else:
         messages.error(request, "You must be logged in to view this page!")
         return redirect(f"/login?next={request.get_full_path()}")
 
-def sf_profiles(request):
+def cf_profiles(request):
     if request.user.is_authenticated:
         User = get_user_model()
         users = User.objects.order_by('username')
@@ -524,14 +524,14 @@ def sf_profiles(request):
         page_obj = page_users.get_page(page_number)
         return render(
             request=request,
-            template_name="main/sf-profiles.html",
+            template_name="main/cf-profiles.html",
             context={"title": "Profiles", "editor": is_editor(request.user), "teacher_group": Group.objects.get(name='teacher'), "page_obj": page_obj, "next": request.get_full_path()}
             )
     else:
         messages.error(request, "You must be logged in to view this page!")
         return redirect(f"/login?next={request.get_full_path()}")
 
-def sf_profile_posts(request, username_slug):
+def cf_profile_posts(request, username_slug):
     if request.user.is_authenticated:
         User = get_user_model()
         users = [x.username for x in User.objects.all()]
@@ -542,17 +542,17 @@ def sf_profile_posts(request, username_slug):
             page_obj = page_upload_feed.get_page(page_number)
             return render(
                 request=request,
-                template_name="main/sf-profile-posts.html",
+                template_name="main/cf-profile-posts.html",
                 context={"title": f"{username_slug}", "editor": is_editor(request.user), "page_obj": page_obj, "total_posts": len(upload_feed), "username_slug": username_slug, "next": request.get_full_path()}
                 )
         else:
             messages.error(request, "User not found!")
-            return redirect("main:sf_profiles")
+            return redirect("main:cf_profiles")
     else:
         messages.error(request, "You must be logged in to view this page!")
         return redirect(f"/login?next={request.get_full_path()}")
 
-def sf_posts(request):
+def cf_posts(request):
     if request.user.is_authenticated:
         upload_feed = UploadFeed.objects.filter(feed_user=request.user).order_by('-feed_date')
         page_upload_feed = Paginator(upload_feed, 12)
@@ -560,7 +560,7 @@ def sf_posts(request):
         page_obj = page_upload_feed.get_page(page_number)
         return render(
             request=request,
-            template_name="main/sf-posts.html",
+            template_name="main/cf-posts.html",
             context={"title": "My Posts", "editor": is_editor(request.user), "page_obj": page_obj, "next": request.get_full_path()}
             )
     else:

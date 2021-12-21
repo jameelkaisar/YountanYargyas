@@ -6,16 +6,16 @@
     <div class="z-depth-1">
         <ul class="breadcrumbs">
             <li><a href="/">Home</a></li>
-            <li>Student Feed</li>
+            <li>Community Notice Board</li>
             <li><b>My Posts</b></li>
         </ul>
     </div>
 
     <div class="row grey lighten-5 z-depth-1" align="center">
-        <a href="/student-feed/feed" style="display: block; color: inherit; text-decoration: inherit;">
+        <a href="/community/feed" style="display: block; color: inherit; text-decoration: inherit;">
             <div class="col s4 m4 l4 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>Feed</b></div>
         </a>
-        <a href="/student-feed/profiles" style="display: block; color: inherit; text-decoration: inherit;">
+        <a href="/community/profiles" style="display: block; color: inherit; text-decoration: inherit;">
             <div class="col s4 m4 l4 upload-bar" style="padding-top: 15px; padding-bottom: 15px;"><b>Profiles</b></div>
         </a>
         <div class="col s4 m4 l4 upload-bar" style="padding-top: 15px; padding-bottom: 15px; background-color: #dadada;"><b>My Posts</b></div>
@@ -24,7 +24,7 @@
     <div class="row">
         {% for post in page_obj %}
             <div class="card card-panel grey lighten-5 z-depth-1">
-                <a href="/student-feed/profiles/{{ post.feed_user.username }}" style="color: inherit; text-decoration: inherit;">
+                <a href="/community/profiles/{{ post.feed_user.username }}" style="color: inherit; text-decoration: inherit;">
                     <span class="card-title"><b>{{ post.feed_user.username }}</b></span>
                 </a>
                 <br>
