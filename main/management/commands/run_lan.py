@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from socket import gethostname, gethostbyname
+import socket
 
 class Command(BaseCommand):
     help = "Run the app over LAN."
@@ -10,10 +10,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            host_name = gethostname()
-            host_addr = gethostbyname(host_name + ".local")
+            host_name = socket.gethostname()
+            host_addr = socket.gethostbyname(host_name + ".local")
             self.stdout.write(f"Server Address: {host_addr}:{options['port']}")
-            call_command("runserver", f"0.0.0.0:{options['port']}", insecure=True)
+            call_command("runserver", f"0.0.0.0:{options['port']}")
         except Exception as err:
             self.stdout.write("")
             if hasattr(err, '__iter__'):

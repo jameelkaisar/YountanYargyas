@@ -51,6 +51,9 @@ class Command(BaseCommand):
             validate_password(password)
 
             User.objects.create_superuser(username=username, password=password)
+
+            self.stdout.write("Command \"collectstatic\":")
+            call_command("collectstatic")
         except Exception as err:
             self.stdout.write("")
             if hasattr(err, '__iter__'):
