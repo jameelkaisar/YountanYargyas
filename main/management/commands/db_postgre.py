@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from pathlib import Path
 
@@ -32,10 +31,9 @@ class Command(BaseCommand):
             with open(".env", "w") as file:
                 file.write(f"SECRET_KEY={SECRET_KEY}\nDATABASE_CODE=1\nDATABASE_NAME={options['name']}\nDATABASE_USER={options['user']}\nDATABASE_PASS={options['pass']}\nDATABASE_HOST={options['host']}\nDATABASE_PORT={options['port']}\n")
 
-            # Restoring Backup to New Database
-            call_command("migrate", run_syncdb=True)
-            ContentType.objects.all().delete()
-            call_command("loaddata_utf8", backup_file_path)
+            # Saving backup_file_path to .tmp file
+            with open(".tmp", "w") as file:
+                file.write(backup_file_path)
         except Exception as err:
             self.stdout.write("")
             if hasattr(err, '__iter__'):
