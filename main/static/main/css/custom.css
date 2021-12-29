@@ -3,6 +3,10 @@ html {
     min-height: 100%;
 }
 
+body {
+    background-color: #67bfc0 !important;
+}
+
 .footer-outer {
     height: 55px;
 }
@@ -25,4 +29,32 @@ html {
     padding-right: 1rem;
     padding-left: 1rem;
     display: inline-block;
+}
+
+.nav-wrapper {
+    background-color: #d87900 !important;
+}
+
+div.card-image .material-icons {
+    background-color: #d87900 !important;
+}
+
+ul.pagination .active {
+    background-color: #d87900 !important;
+}
+
+/*ul.pagination li.disabled i.material-icons {
+    color: #ffffff !important;
+}*/
+
+ul.collapsible {
+    background-color: #ffffff !important;
+}
+
+div.card, ul.collapsible, ul.breadcrumbs {
+    border: 2px solid #000f9f;
+}
+
+div.cftop {
+    border: 2px solid #000f9f;
 }
