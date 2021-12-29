@@ -33,6 +33,13 @@ body {
 
 .nav-wrapper {
     background-color: #d87900 !important;
+    border-bottom: 1px solid #000f9f;
+}
+
+.yyfooter {
+    background-color: #d87900;
+    border-top: 1px solid #000f9f;
+
 }
 
 div.card-image .material-icons {
@@ -52,9 +59,9 @@ ul.collapsible {
 }
 
 div.card, ul.collapsible, ul.breadcrumbs {
-    border: 2px solid #000f9f;
+    border: 1px solid #000f9f;
 }
 
 div.cftop {
-    border: 2px solid #000f9f;
+    border: 1px solid #000f9f;
 }
