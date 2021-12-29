@@ -15,7 +15,7 @@
         <ul class="collapsible">
             <li>
                 <div class="collapsible-header grey lighten-5 z-depth-1"><i class="material-icons">add</i><big>New Content</big></div>
-                <div class="collapsible-body input-field">
+                <div class="collapsible-body">
                     <form method="POST" enctype="multipart/form-data" id="upload_progress_form">
                         {% csrf_token %}
                         {{ form.as_p }}
