@@ -201,3 +201,39 @@ Replace `gunicorn_path` by output of `pip show gunicorn | grep "Location:" | cut
 sudo systemctl start gunicorn.socket
 sudo systemctl enable gunicorn.socket
 ```
+
+#### Configuring nginx
+- YountanYargyas nginx file
+```
+sudo nano /etc/nginx/sites-available/YountanYargyas
+```
+
+```
+server {
+    listen <port>;
+    server_name <ip>;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location /static/ {
+        root <repository_path>;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}
+```
+
+Replace `port` by the port on which you want to serve the website
+
+Replace `ip` by the ip address on which you want to serve the website
+
+Replace `repository_path` by the path of clonned repository
+
+#### Enabling nginx
+```
+sudo ln -s /etc/nginx/sites-available/YountanYargyas /etc/nginx/sites-enabled/
+sudo systemctl restart nginx
+```
