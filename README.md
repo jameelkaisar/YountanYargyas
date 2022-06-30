@@ -32,7 +32,7 @@ pip install virtualenv
 
 #### Add `virtualenv` to PATH (Unix only)
 ```
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="`pip show virtualenv | grep "Location:" | cut -d " " -f 2-`:$PATH"
 ```
 
 #### Create a virtual environment
@@ -141,4 +141,63 @@ python3 manage.py db_migrate
 #### Test the application
 ```
 python3 manage.py run_lan --insecure
+```
+
+#### Setting up gunicorn
+```
+pip install gunicorn
+export PATH="`pip show gunicorn | grep "Location:" | cut -d " " -f 2-`:$PATH"
+```
+
+#### Testing gunicorn
+```
+gunicorn --bind 0.0.0.0:8000 YountanYargyas.wsgi
+```
+
+#### Configuring gunicorn
+- gunicorn socket file
+```
+sudo nano /etc/systemd/system/gunicorn.socket
+```
+
+```
+[Unit]
+Description=gunicorn socket
+[Socket]
+ListenStream=/run/gunicorn.sock
+[Install]
+WantedBy=sockets.target
+```
+
+- gunicorn service file
+```
+sudo nano /etc/systemd/system/gunicorn.service
+```
+
+```
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=<repository_path>
+ExecStart=<gunicorn_path> \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          YountanYargyas.wsgi:application
+[Install]
+WantedBy=multi-user.target
+```
+
+Replace `repository_path` by the path of clonned repository
+
+Replace `gunicorn_path` by output of `pip show gunicorn | grep "Location:" | cut -d " " -f 2-` command
+
+#### Enabling gunicorn
+```
+sudo systemctl start gunicorn.socket
+sudo systemctl enable gunicorn.socket
 ```
