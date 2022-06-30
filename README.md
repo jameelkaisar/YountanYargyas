@@ -8,14 +8,12 @@ Some text about this project: features, technical details, etc.
 
 ## Installation
 
-### Testing
+### Requirements
+- Python3
+- pip
+- git
 
-#### Installing requirements
-```
-sudo apt update
-sudo apt upgrade
-sudo apt install git python3-pip python-dev
-```
+### Testing
 
 #### Clone the repository
 ```
@@ -83,7 +81,7 @@ python manage.py run_lan --insecure
 deactivate
 ```
 
-### Deployment
+### Deployment (Ubuntu)
 
 #### Installing requirements
 ```
@@ -110,24 +108,14 @@ pip install -r requirements.txt
 ```
 
 #### Initialize the application
-- Unix
 ```
 python3 manage.py app_init
 ```
-- Windows
-```
-python manage.py app_init
-```
 Enter superuser name and password
 
-#### Start the application
-- Unix
+#### Test the application
 ```
 python3 manage.py run_lan --insecure
-```
-- Windows
-```
-python manage.py run_lan --insecure
 ```
 
 #### Setting up PostgreSQL database
@@ -145,13 +133,12 @@ exit
 ```
 
 #### Changing database to PostgreSQL
-- Unix
 ```
 python3 manage.py db_postgre --name "yountanyargyas" --user "admin" --pass "#admin@db#"
 python3 manage.py db_migrate
 ```
-- Windows
+
+#### Test the application
 ```
-python manage.py db_postgre --name "yountanyargyas" --user "admin" --pass "#admin@db#"
-python manage.py db_migrate
+python3 manage.py run_lan --insecure
 ```
