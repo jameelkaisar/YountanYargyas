@@ -71,11 +71,11 @@ Enter superuser name and password
 #### Start the application
 - Unix
 ```
-python3 manage.py run_lan
+python3 manage.py run_lan --insecure
 ```
 - Windows
 ```
-python manage.py run_lan
+python manage.py run_lan --insecure
 ```
 
 #### Deactivate the virtual environment
