@@ -191,7 +191,7 @@ Replace `username` by the output of `whoami` command
 
 Replace `repository_path` by the path of clonned repository
 
-Replace `gunicorn_path` by the output of `whereis gunicorn | grep "Location:" | cut -d " " -f 2-` command
+Replace `gunicorn_path` by the output of `which gunicorn` command
 
 #### Enabling gunicorn
 ```
