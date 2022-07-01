@@ -216,6 +216,10 @@ server {
         root <repository_path>;
     }
 
+    location /media/ {
+        root <repository_path>;
+    }
+
     location / {
         include proxy_params;
         proxy_pass http://unix:/run/gunicorn.sock;
