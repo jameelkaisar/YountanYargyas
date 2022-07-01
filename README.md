@@ -26,13 +26,13 @@ cd YountanYargyas
 ```
 
 #### Install `virtualenv`
+- Unix
+```
+sudo apt install python3-virtualenv
+```
+- Windows
 ```
 pip install virtualenv
-```
-
-#### Add `virtualenv` to PATH (Unix only)
-```
-export PATH="`pip show virtualenv | grep "Location:" | cut -d " " -f 2-`:$PATH"
 ```
 
 #### Create a virtual environment
@@ -89,6 +89,7 @@ sudo apt update
 sudo apt upgrade
 sudo apt install git python3-pip python-dev
 sudo apt install libpq-dev postgresql postgresql-contrib
+sudo apt install gunicorn
 sudo apt install nginx
 ```
 
@@ -141,12 +142,6 @@ python3 manage.py db_migrate
 #### Test the application
 ```
 python3 manage.py run_lan --insecure
-```
-
-#### Setting up gunicorn
-```
-pip install gunicorn
-export PATH="`pip show gunicorn | grep "Location:" | cut -d " " -f 2-`:$PATH"
 ```
 
 #### Testing gunicorn
