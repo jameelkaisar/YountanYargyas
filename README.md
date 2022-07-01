@@ -28,6 +28,8 @@ cd YountanYargyas
 #### Install `virtualenv`
 - Unix
 ```
+sudo apt update
+sudo apt upgrade
 sudo apt install python3-virtualenv
 ```
 - Windows
