@@ -180,21 +180,23 @@ Description=gunicorn daemon
 Requires=gunicorn.socket
 After=network.target
 [Service]
-User=root
+User=<username>
 Group=www-data
 WorkingDirectory=<repository_path>
 ExecStart=<gunicorn_path> \
           --access-logfile - \
-          --workers 3 \
+          --workers 2 \
           --bind unix:/run/gunicorn.sock \
           YountanYargyas.wsgi:application
 [Install]
 WantedBy=multi-user.target
 ```
 
+Replace `username` by the output of `whoami` command
+
 Replace `repository_path` by the path of clonned repository
 
-Replace `gunicorn_path` by output of `pip show gunicorn | grep "Location:" | cut -d " " -f 2-` command
+Replace `gunicorn_path` by the output of `whereis gunicorn | grep "Location:" | cut -d " " -f 2-` command
 
 #### Enabling gunicorn
 ```
