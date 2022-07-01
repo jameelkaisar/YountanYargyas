@@ -234,3 +234,14 @@ Replace `repository_path` by the path of clonned repository
 sudo ln -s /etc/nginx/sites-available/YountanYargyas /etc/nginx/sites-enabled/
 sudo systemctl restart nginx
 ```
+
+#### Additional points
+- Add `Inbound Port Rule` on your server to allow external traffic
+- Edit `ALLOWED_HOSTS` variable in `YountanYargyas/settings.py` file in the clonned repository to allow only specific domains
+- Make sure `DEBUG` variable is set `False` in `YountanYargyas/settings.py` file in the clonned repository
+
+#### Additional useful commands
+- Restart gunicorn: `sudo systemctl daemon-reload && sudo systemctl restart gunicorn`
+- Check gunicorn Status: `sudo systemctl status gunicorn.socket`
+- Check gunicorn Logs: `sudo journalctl -u gunicorn`
+- Restart nginx: `sudo systemctl restart nginx`
