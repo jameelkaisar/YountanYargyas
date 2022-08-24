@@ -241,6 +241,47 @@ sudo ln -s /etc/nginx/sites-available/YountanYargyas /etc/nginx/sites-enabled/
 sudo systemctl restart nginx
 ```
 
+#### Configuring nginx (for IIAB only)
+- capture.conf nginx file
+```
+sudo nano /etc/nginx/sites-available/capture.conf
+```
+
+Append the following to the capture.conf file
+```
+server {
+    listen <port>;
+    server_name <ip>;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location /static/ {
+        root <repository_path>;
+    }
+
+    location /media/ {
+        root <repository_path>;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}
+```
+
+
+Replace `port` by the port on which you want to serve the website
+
+Replace `ip` by the ip address on which you want to serve the website
+
+Replace `repository_path` by the path of clonned repository
+
+#### Enabling nginx (for IIAB only)
+```
+sudo systemctl restart nginx
+```
+
 #### Additional points
 - Add `Inbound Port Rule` on your server to allow external traffic
 - Edit `ALLOWED_HOSTS` variable in `YountanYargyas/settings.py` file in the clonned repository to allow only specific domains
