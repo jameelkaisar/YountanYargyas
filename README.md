@@ -212,6 +212,8 @@ server {
     listen <port>;
     server_name <ip>;
 
+    client_max_body_size 300M;
+
     location = /favicon.ico { access_log off; log_not_found off; }
 
     location /static/ {
@@ -252,6 +254,8 @@ Append the following to the capture.conf file
 server {
     listen <port>;
     server_name <ip>;
+
+    client_max_body_size 300M;
 
     location = /favicon.ico { access_log off; log_not_found off; }
 
