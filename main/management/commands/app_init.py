@@ -53,7 +53,7 @@ class Command(BaseCommand):
             User.objects.create_superuser(username=username, password=password)
 
             self.stdout.write("Command \"collectstatic\":")
-            call_command("collectstatic")
+            call_command("collectstatic", no_input=True, interactive=False)
         except Exception as err:
             self.stdout.write("")
             if hasattr(err, '__iter__'):
