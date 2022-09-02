@@ -260,7 +260,7 @@ def admin_section(request):
                             backup_file_path = backup_folder_path + backup_file
                             Path("backup/full/").mkdir(parents=True, exist_ok=True)
                             Path("media/").mkdir(parents=True, exist_ok=True)
-                            copytree("media/", backup_folder_path)
+                            copytree("media/", backup_folder_path + "media/")
                             call_command("dumpdata_utf8", output=backup_file_path)
                             # Using Default dumpdata Command
                             # with open(backup_file_path, mode="w", encoding='utf-8') as f:
