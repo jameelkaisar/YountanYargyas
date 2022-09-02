@@ -123,6 +123,7 @@ python3 manage.py run_lan --insecure
 
 #### Setting up PostgreSQL database
 ```
+sudo service postgresql start
 sudo -i -u postgres
 psql
 CREATE DATABASE yountanyargyas;
