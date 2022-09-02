@@ -296,3 +296,63 @@ sudo systemctl restart nginx
 - Check gunicorn Status: `sudo systemctl status gunicorn.socket`
 - Check gunicorn Logs: `sudo journalctl -u gunicorn`
 - Restart nginx: `sudo systemctl restart nginx`
+
+## Backup and Restore
+### Backup
+#### Automatic Backup
+You can take partial or full backup directly from the Admin Section. The partial backup will take the backup of database only and the full backup will take the backup of database along with all the static files.
+
+#### Manual Backup
+First take the backup of `media` folder by copying it. Then take the backup of database using the following commands.
+
+- UNIX
+```
+python3 manage.py dumpdata_utf8 > data.json
+```
+- Windows
+```
+python manage.py dumpdata_utf8 > data.json
+```
+
+### Restore
+#### Manual Restore
+First copy the `media` folder back. Then restore the database using the following commands.
+
+- Unix
+```
+python3 manage.py migrate --run-syncdb
+```
+- Windows
+```
+python manage.py migrate --run-syncdb
+```
+
+Now run the following lines in the Django shell.
+- Unix
+```
+python3 manage.py shell
+```
+- Windows
+```
+python manage.py shell
+```
+- You can skip this command if you use `python3 manage.py dumpdata_utf8 --exclude=contenttypes --exclude=auth.Permission > data.json` while taking the backup.
+
+```
+from django.contrib.contenttypes.models import ContentType
+ContentType.objects.all().delete()
+quit()
+```
+
+Now restore the database using the following command.
+- Unix
+```
+python3 manage.py loaddata_utf8 data.json
+```
+- Windows
+```
+python manage.py loaddata_utf8 data.json
+```
+
+- Tip: You can also use default `dumpdata` and `loaddata` commands by setting `X` flag to `utf8` in python.
+- Example: `python3 -X utf8 manage.py dumpdata > data.json`
