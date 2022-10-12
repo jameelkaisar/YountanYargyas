@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Notification, HelpSection
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadAssembly, UploadFeed, Notification, HelpSection
 from tinymce.widgets import TinyMCE
 
 class MyRegistrationForm(UserCreationForm):
@@ -93,6 +93,13 @@ class AddFile(forms.ModelForm):
         labels = {"file_name": "File Name", "file_summary": "File Summary", "file_file": ""}
         widgets = {"file_name": forms.TextInput(attrs={"autocomplete": "off", "maxlength": "100"}), "file_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "file_file": forms.FileInput(attrs={"style": "display: none;"})}
 
+class AddAssembly(forms.ModelForm):
+    class Meta:
+        model = UploadAssembly
+        fields = ["video_name", "video_summary", "video_file"]
+        labels = {"video_name": "Video Name", "video_summary": "Video Summary", "video_file": ""}
+        widgets = {"video_name": forms.TextInput(attrs={"autocomplete": "off", "maxlength": "100"}), "video_summary": forms.Textarea(attrs={"class": "materialize-textarea"}), "video_file": forms.FileInput(attrs={"style": "display: none;", "accept": "video/*"})}
+
 class AddFeed(forms.ModelForm):
     class Meta:
         model = UploadFeed
@@ -170,6 +177,13 @@ class EditFile(forms.Form):
     data_next = forms.CharField(widget=forms.HiddenInput())
     file_name = forms.CharField(widget=forms.TextInput(attrs={"autocomplete": "off"}), label="File Name", max_length=100)
     file_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="File Summary", max_length=500)
+
+class EditAssembly(forms.Form):
+    data_id = forms.CharField(widget=forms.HiddenInput())
+    data_type = forms.CharField(widget=forms.HiddenInput())
+    data_next = forms.CharField(widget=forms.HiddenInput())
+    video_name = forms.CharField(widget=forms.TextInput(attrs={"autocomplete": "off"}), label="Video Name", max_length=100)
+    video_summary = forms.CharField(widget=forms.Textarea(attrs={"class": "materialize-textarea"}), label="Video Summary", max_length=500)
 
 class EditFeed(forms.Form):
     data_id = forms.CharField(widget=forms.HiddenInput())

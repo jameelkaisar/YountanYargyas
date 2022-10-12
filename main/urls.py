@@ -36,6 +36,7 @@ urlpatterns = [
     # path("upload/videos", views.upload_videos, name="upload_videos"),
     # path("upload/audios", views.upload_audios, name="upload_audios"),
     # path("upload/files", views.upload_files, name="upload_files"),
+    path("assembly/", views.assembly, name="assembly"),
     path("community/", views.community_feed, name="community_feed"),
     path("community/feed", views.cf_feed, name="cf_feed"),
     path("community/profiles", views.cf_profiles, name="cf_profiles"),

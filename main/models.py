@@ -257,6 +257,26 @@ class UploadFile(models.Model):
     def __str__(self):
         return self.file_name
 
+class UploadAssembly(models.Model):
+    def user_directory_path(instance, filename):
+        return f"assembly/{slugify(instance.video_name) if slugify(instance.video_name) else slugify(''.join(random.choices(string.ascii_lowercase + string.digits, k=10)))}.{filename.split('.')[-1]}"
+
+    video_name = models.CharField(max_length=100)
+    video_summary = models.CharField(max_length=500, blank=True, null=True)
+
+    video_file = models.FileField(upload_to=user_directory_path)
+
+    class Meta:
+        verbose_name_plural = "Videos"
+
+    def delete(self, *args, **kwargs):
+        if self.video_file:
+            self.video_file.storage.delete(self.video_file.name)
+        super(UploadAssembly, self).delete(*args, **kwargs)
+
+    def __str__(self):
+        return self.video_name
+
 class UploadFeed(models.Model):
     def user_directory_path(instance, filename):
         filename_base = filename.rsplit(".", 1)[0]

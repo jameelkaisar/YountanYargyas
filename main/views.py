@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadFeed, Chat, Message, Notification, HelpSection
+from .models import StudentClass, StudentSubject, StudentChapter, StudentSection, StudentCategory, StudentContent, UploadImage, UploadVideo, UploadAudio, UploadFile, UploadAssembly, UploadFeed, Chat, Message, Notification, HelpSection
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash, get_user_model
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
-from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddCategory, AddContent, AddImage, AddVideo, AddAudio, AddFile, AddFeed, EditClass, EditSubject, EditChapter, EditSection, EditStudentCategory, EditStudentContent, EditImage, EditVideo, EditAudio, EditFile, EditFeed, NewChat, NewMessage, AddNotification, EditNotification, AddHelpSection, EditHelpSection
+from .forms import MyRegistrationForm, MyLoginForm, ChangePasswordForm, AddClass, AddSubject, AddChapter, AddSection, AddCategory, AddContent, AddImage, AddVideo, AddAudio, AddFile, AddAssembly, AddFeed, EditClass, EditSubject, EditChapter, EditSection, EditStudentCategory, EditStudentContent, EditImage, EditVideo, EditAudio, EditFile, EditAssembly, EditFeed, NewChat, NewMessage, AddNotification, EditNotification, AddHelpSection, EditHelpSection
 from django.core.paginator import Paginator
 from django.utils.text import slugify
 from django.core.management import call_command
@@ -477,6 +477,30 @@ def upload_files(request):
     else:
         messages.error(request, "You must be logged in to view this page!")
         return redirect(f"/login?next={request.get_full_path()}")
+
+def assembly(request):
+    if request.method == "POST":
+        form = AddAssembly(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.info(request, "Assembly Uploaded Successfully!")
+            return JsonResponse({'result': 'success'})
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, error)
+            return JsonResponse({'result': 'error'})
+
+    form = AddAssembly()
+    upload_video = list(reversed(UploadAssembly.objects.all()))
+    page_upload_video = Paginator(upload_video, 6)
+    page_number = request.GET.get('page')
+    page_obj = page_upload_video.get_page(page_number)
+    return render(
+        request=request,
+        template_name="main/assembly.html",
+        context={"title": "Assembly", "editor": is_editor(request.user), "page_obj": page_obj, "form": form, "next": request.get_full_path()}
+        )
 
 def community_feed(request):
     if request.user.is_authenticated:
@@ -1083,6 +1107,17 @@ def delete_data(request):
                         return redirect("main:homepage")
                 except:
                     return redirect("main:homepage")
+            elif request.POST.get('data_type') == "assembly" and is_editor(request.user):
+                try:
+                    instance = UploadAssembly.objects.get(id=request.POST.get('data_id'))
+                    instance.delete()
+                    messages.info(request, "Assembly Deleted Successfully!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
             elif request.POST.get('data_type') == "post":
                 try:
                     instance = UploadFeed.objects.get(id=request.POST.get('data_id'))
@@ -1562,6 +1597,33 @@ def edit_data(request):
                         messages.info(request, "File Edited Successfully!")
                     except:
                         messages.error(request, "Error while saving the file!")
+                    if request.POST.get('data_next'):
+                        return redirect(request.POST.get('data_next'))
+                    else:
+                        return redirect("main:homepage")
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "assembly" and is_editor(request.user):
+                try:
+                    instance = UploadAssembly.objects.get(id=request.POST.get('data_id'))
+                    form = EditAssembly(initial={"data_id": request.POST.get('data_id'), "data_type": f"edit-{request.POST.get('data_type')}", "data_next": request.POST.get('data_next'), "video_name": instance.video_name, "video_summary": instance.video_summary})
+                    return render(
+                        request=request,
+                        template_name="main/edit-data.html",
+                        context={"title": "Edit Assembly", "form": form}
+                        )
+                except:
+                    return redirect("main:homepage")
+            elif request.POST.get('data_type') == "edit-assembly" and is_editor(request.user):
+                try:
+                    instance = UploadAssembly.objects.get(id=request.POST.get('data_id'))
+                    instance.video_name = request.POST.get('video_name')
+                    instance.video_summary = request.POST.get('video_summary')
+                    try:
+                        instance.save()
+                        messages.info(request, "Assembly Edited Successfully!")
+                    except:
+                        messages.error(request, "Error while saving the video!")
                     if request.POST.get('data_next'):
                         return redirect(request.POST.get('data_next'))
                     else:
